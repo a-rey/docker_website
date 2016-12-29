@@ -1,3 +1,6 @@
+### production files ###
+keys.sh
+
 ### OSX ###
 *.DS_Store
 .AppleDouble
