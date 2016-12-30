@@ -13,7 +13,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 ########## DEBUG CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = os.environ['DEBUG']
+DEBUG = True if (os.environ['DEBUG'] == 'True') else False
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 ########## END DEBUG CONFIGURATION
 
