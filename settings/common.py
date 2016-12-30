@@ -140,7 +140,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#staticfiles-dirs
 STATICFILES_DIRS = [
-  os.path.join(BASE_DIR, 'static'),
+  os.path.normpath(os.path.join(BASE_DIR, 'static')),
 ]
 ########## END STATIC FILES CONFIGURATION
 
