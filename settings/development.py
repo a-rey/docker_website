@@ -44,17 +44,3 @@ DATABASES = {
 }
 ########## END DATABASE CONFIGURATION
 
-
-########## STATIC FILES CONFIGURATION
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = '/static/'
-
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# https://docs.djangoproject.com/en/dev/ref/settings/#staticfiles-dirs
-STATICFILES_DIRS = [
-  os.path.normpath(os.path.join(BASE_DIR, 'static')),
-]
-########## END STATIC FILES CONFIGURATION
-
