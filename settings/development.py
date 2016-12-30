@@ -50,7 +50,7 @@ DATABASES = {
 STATIC_URL = '/static/'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = BASE_DIR
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#staticfiles-dirs
 STATICFILES_DIRS = [
