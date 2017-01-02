@@ -7,4 +7,4 @@ def home(request):
   """
   request handler for '/'.
   """
-  return render(request, 'xmas_lights/index.html', {})
+  return render(request, 'pixels/index.html', {})

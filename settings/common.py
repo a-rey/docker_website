@@ -72,7 +72,7 @@ INSTALLED_APPS = [
   'django.contrib.sessions',
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  'xmas_lights',
+  'pixels',
 ]
 ########## END APP CONFIGURATION
 
