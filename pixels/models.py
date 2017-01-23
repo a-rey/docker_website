@@ -15,8 +15,7 @@ class Routine(models.Model):
   represents a routine to be downloaded and run
   """
   MAX_TITLE_LEN = 50
-  MAX_ROUTINE_LEN = 100000
 
   title = models.CharField(max_length=MAX_TITLE_LEN)
-  code = models.BinaryField() # base64 encoded code
+  code = models.TextField()
 

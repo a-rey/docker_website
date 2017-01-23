@@ -43,7 +43,6 @@
         background-color: white;
         border-radius: 5px;
       }
-
     </style>
 
     <!--- Javascript -->
@@ -63,16 +62,19 @@
           <span style="color: blue">L</span>
           <span style="color: purple">s</span>
         </h1>
-        <form class="ui large form">
+        <form action="" class="ui large form" method="post">
+          {% csrf_token %}
           <div class="field">
             <select class="ui fluid dropdown">
-              <option value="{{ running.pk }}" selected="selected">{{ running.title }}</option>
+              <option name="pk" value="{{ running.pk }}" selected="selected">{{ running.title }}</option>
               {% for routine in routines %}
-                <option value="{{ routine.pk }}">{{ routine.title }}</option>
+                <option name="pk" value="{{ routine.pk }}">{{ routine.title }}</option>
               {% endfor %}
             </select>
           </div>
-          <div class="ui fluid large violet submit button">Change Routine</div>
+          <div class="ui fluid large violet">
+            <input type="submit" name="Change Routine" value="Change Routine" class="submit button"/>
+          </div>
           <div class="ui error message"></div>
         </form>
         <div class="ui message">
