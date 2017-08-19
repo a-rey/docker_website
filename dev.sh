@@ -14,11 +14,10 @@ RCol='\033[0m'
 
 echo -e "\n ${BGre}[${APP}] ${SP}checking for python virtual environment..."
 echo -e "${RCol}"
-VENV="$(which python)"
-if [[ ( "/usr/bin/python" == "${VENV}" ) || ( "/usr/local/bin/python" == "${VENV}" ) ]]; then
+if [ -z "$VIRTUAL_ENV" ]; then
   echo -e "\n ${BRed}[${APP}] ${Red}detected non-virtual python environment: ${VENV}"
   echo -e "${RCol}"
-  exit 0
+  exit 1
 fi
 
 if [ "$1" == "clean" ]; then

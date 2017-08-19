@@ -2,6 +2,32 @@
 
 My personal Django server running on heroku that I use in personal projects as a web backend
 
+## Apps
+
+- `pixels` ...
+- `whoami` Parses client request headers and returns them in JSON
+
+## Development
+
+- clone repo and setup virtual env:
+```
+virtualenv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+- run dev server: `./dev.sh`
+
+## Deployment
+
+- clean repo: `./dev.sh clean`
+- push code to github repo
+
+## tips
+
+- exit virtual environment: `deactivate`
+- login to heroku: `heroku login`
+- update heroku CLI: `brew update && brew upgrade`
+
 ## TODO:
 
 #### pixels

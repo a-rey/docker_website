@@ -73,6 +73,7 @@ INSTALLED_APPS = [
   'django.contrib.messages',
   'django.contrib.staticfiles',
   'pixels',
+  'whoami',
 ]
 ########## END APP CONFIGURATION
 
@@ -143,5 +144,4 @@ STATICFILES_DIRS = [
   os.path.normpath(os.path.join(BASE_DIR, 'static')),
 ]
 ########## END STATIC FILES CONFIGURATION
-
 
