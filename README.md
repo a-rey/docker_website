@@ -21,8 +21,9 @@ pip install -r requirements.txt
 
 - clean repo: `./dev.sh clean`
 - push code to github repo
+- login to heroku and deploy the master branch
 
-## tips
+## Tips
 
 - exit virtual environment: `deactivate`
 - login to heroku: `heroku login`

@@ -5,8 +5,8 @@ import re
 def main(request):
   info = {}
   # get client IP
-  info['IP'] = request.META.get('HTTP_X_FORWARDED_FOR', None)
-  if info['IP']:
+  ip = request.META.get('HTTP_X_FORWARDED_FOR', None)
+  if ip:
     # X_FORWARDED_FOR returns client1, proxy1, proxy2,...
     info['IP'] = ip.split(', ')[0]
   else:
