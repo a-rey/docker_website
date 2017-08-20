@@ -20,8 +20,6 @@ def main(request):
   # set CORs headers
   response['Access-Control-Allow-Origin'] = '*'
   response['Access-Control-Allow-Methods'] = 'GET'
-  response['Access-Control-Allow-Headers'] = '*'
   response['Access-Control-Allow-Credentials'] = 'false'
-  response['Access-Control-Expose-Headers'] = '*'
   response['Access-Control-Max-Age'] = '-1'
   return response
