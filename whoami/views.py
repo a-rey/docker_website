@@ -15,7 +15,7 @@ def main(request):
   headers_regex = re.compile(r'^(HTTP_.+|CONTENT_TYPE|CONTENT_LENGTH)$')
   for h in request.META:
     if headers_regex.match(h):
-        info[h] = request.META[h]
+        info[h.replace('HTTP_', '')] = request.META[h]
   response = JsonResponse(info)
   # set CORs headers
   response['Access-Control-Allow-Origin'] = '*'
