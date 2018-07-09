@@ -4,7 +4,7 @@ My personal Django server running on heroku that I use in personal projects as a
 
 ## Apps
 
-- `whoami` Parses client request headers and returns them in JSON with a GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/legacy/geolite/) databases.
+- `whoami` Parses client request headers and returns them in JSON with a GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/geoip2/geolite2/) databases.
 
 ## Development Notes
 
@@ -26,3 +26,4 @@ pip install -r requirements.txt
 - login to heroku: `heroku login`
 - push code to heroku linked github repo
 - login to [heroku](https://dashboard.heroku.com/apps/aaronmreyes/deploy/github) and manually deploy application
+-
