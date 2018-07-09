@@ -52,7 +52,7 @@ cat requirements.txt
 
 echo -e "\n ${BGre}[${APP}] ${SP}creating default models..."
 echo -e "${RCol}"
-python manage.py loaddata whoami.json
+python manage.py loaddata whoami/*.json
 
 echo -e "\n ${BGre}[${APP}] ${SP}creating surperuser account..."
 echo -e "${RCol}"

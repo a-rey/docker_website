@@ -10,6 +10,7 @@ import json
 import csv
 import os
 
+BLK = 5000
 LOG_FORMAT = '[%(asctime)s][%(levelname)s] %(message)s'
 
 def cidr2int(cidr):
@@ -116,9 +117,11 @@ if __name__ == '__main__':
       'pk': i,
       'fields': asn[i],
     })
-  logging.info('writing fixture whoami.json ...')
-  with open('whoami.json', 'w') as f:
-    f.write(json.dumps(out))
+  # write out fixtures in chunks to avoid a massive file
+  for i in range(0, len(out), BLK):
+    logging.info('writing fixture whoami_{0}.json ...'.format(i))
+    with open('whoami_{0}.json'.format(i), 'w') as f:
+      f.write(json.dumps(out[i:i+BLK]))
   logging.info('cleaning up ...')
   os.remove('GeoLiteCity.zip')
   os.remove('GeoLiteASN.zip')
