@@ -24,4 +24,5 @@ pip install -r requirements.txt
 - update heroku CLI: `brew update && brew upgrade`
 - clean repo: `./dev.sh clean`
 - login to heroku: `heroku login`
-- push code to heroku linked github repo: `git add --all`
+- push code to heroku linked github repo
+- login to [heroku](https://dashboard.heroku.com/apps/aaronmreyes/deploy/github) and manually deploy application
