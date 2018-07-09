@@ -41,7 +41,7 @@ printf 'yes' | python manage.py collectstatic
 
 echo -e "\n ${BGre}[${APP}] ${SP}migrating database..."
 echo -e "${RCol}"
-python manage.py makemigrations pixels
+python manage.py makemigrations whoami
 python manage.py migrate
 
 echo -e "\n ${BGre}[${APP}] ${SP}freezing current requirements..."
@@ -52,8 +52,12 @@ cat requirements.txt
 
 echo -e "\n ${BGre}[${APP}] ${SP}creating default models..."
 echo -e "${RCol}"
-python manage.py loaddata pixels.json
+python manage.py loaddata whoami.json
 
-echo -e "\n ${BGre}[${APP}] ${SP}starting server..."
+echo -e "\n ${BGre}[${APP}] ${SP}creating surperuser account..."
+echo -e "${RCol}"
+python manage.py createsuperuser
+
+echo -e "\n ${BGre}[${APP}] ${SP}starting server at 127.0.0.1:8000 ..."
 echo -e "${RCol}"
 python manage.py runserver 127.0.0.1:8000

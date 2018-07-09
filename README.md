@@ -1,39 +1,27 @@
 # Django server with DB backend on Heroku
 
-My personal Django server running on heroku that I use in personal projects as a web backend
+My personal Django server running on heroku that I use in personal projects as a backend
 
 ## Apps
 
-- `pixels` ...
-- `whoami` Parses client request headers and returns them in JSON
+- `whoami` Parses client request headers and returns them in JSON with a GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/legacy/geolite/) databases.
 
-## Development
+## Development Notes
 
-- clone repo and setup virtual env:
+- build python virtual environment (may need to update `requirements.txt` software versions too):
 ```
+rm -rf env/
+pip install virtualenv --upgrade
 virtualenv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
 - run dev server: `./dev.sh`
+- exit virtual environment: `deactivate`
 
 ## Deployment
 
-- clean repo: `./dev.sh clean`
-- push code to github repo
-- login to heroku and deploy the master branch
-
-## Tips
-
-- exit virtual environment: `deactivate`
-- login to heroku: `heroku login`
 - update heroku CLI: `brew update && brew upgrade`
-
-## TODO:
-
-#### pixels
-- add syntax highlighting for python for a browser text editor? (maybe make a portable version of this?)
-- set code editing form to fit the screen height correctly
-  - setting height attribute in style of textarea only adjusts to the number of rows given
-  - need a way to count the number of lines in the routine to set the rows attribute of the textarea
-- figure out how to code a radio button in django for the mainpage form
+- clean repo: `./dev.sh clean`
+- login to heroku: `heroku login`
+- push code to heroku linked github repo: `git add --all`

@@ -2,7 +2,7 @@
 production settings
 """
 import os
-from common import *
+from settings.common import *
 
 
 ########## SECURITY CONFIGURATION

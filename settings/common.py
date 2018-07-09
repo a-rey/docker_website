@@ -72,7 +72,6 @@ INSTALLED_APPS = [
   'django.contrib.sessions',
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  'pixels',
   'whoami',
 ]
 ########## END APP CONFIGURATION
