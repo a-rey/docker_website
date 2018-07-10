@@ -10,7 +10,7 @@ import json
 import csv
 import os
 
-BLK = 5000
+BLK = 6000
 LOG_FORMAT = '[%(asctime)s][%(levelname)s] %(message)s'
 
 def cidr2int(cidr):
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     _start = ip2int(n[0])
     _end = _start + cidr2int(n[1])
     # clean up data fields
-    blk[i].update({'_ipstart': _start, '_ipend': _end})
+    blk[i].update({'ip_start': _start, 'ip_end': _end})
     blk[i].pop('network', None)
     blk[i].pop('postal_code', None)
     blk[i].pop('accuracy_radius', None)
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     _start = ip2int(n[0])
     _end = _start + cidr2int(n[1])
     # clean up data fields
-    asn[i].update({'_ipstart': _start, '_ipend': _end})
+    asn[i].update({'ip_start': _start, 'ip_end': _end})
     asn[i].pop('network', None)
     asn[i].pop('autonomous_system_number', None)
     out.append({

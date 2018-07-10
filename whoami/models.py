@@ -9,11 +9,11 @@ class Block(models.Model):
     ('geoname_id', 1810821)
     ('latitude', 26.0614)
     ('longitude', 119.3061)
-    ('_ipstart', 16777472)
-    ('_ipend', 16777727)
+    ('ip_start', 16777472)
+    ('ip_end', 16777727)
   """
-  _ipstart = models.IntegerField()
-  _ipend = models.IntegerField()
+  ip_start = models.IntegerField()
+  ip_end = models.IntegerField()
   geoname_id = models.IntegerField()
   latitude = models.FloatField()
   longitude = models.FloatField()
@@ -40,10 +40,10 @@ class Asn(models.Model):
     https://dev.maxmind.com/geoip/geoip2/geoip2-city-country-csv-databases/
   Example data:
     ('autonomous_system_organization', 'Time Warner Cable Internet LLC')
-    ('_ipstart', 16777472)
-    ('_ipend', 16777727)
+    ('ip_start', 16777472)
+    ('ip_end', 16777727)
   """
   MAX_LEN = 255
-  _ipstart = models.IntegerField()
-  _ipend = models.IntegerField()
+  ip_start = models.IntegerField()
+  ip_end = models.IntegerField()
   autonomous_system_organization = models.CharField(max_length=MAX_LEN)
