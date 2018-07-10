@@ -1,5 +1,9 @@
 from django.contrib import admin
 
+from whoami.models import Asn
+from whoami.models import Block
+from whoami.models import Location
+
 
 class BlockAdmin(admin.ModelAdmin):
   list_display = ('get_geoname_id', 'get_ip_start', 'get_ip_end', 'get_latitude', 'get_longitude')
@@ -84,3 +88,7 @@ class AsnAdmin(admin.ModelAdmin):
   get_autonomous_system_organization.admin_order_field = 'autonomous_system_organization'
   get_autonomous_system_organization.short_description = 'ASN'
 
+
+admin.site.register(Asn, AsnAdmin)
+admin.site.register(Block, BlockAdmin)
+admin.site.register(Location, LocationAdmin)
