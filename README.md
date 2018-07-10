@@ -23,7 +23,10 @@ pip install -r requirements.txt
 
 - update heroku CLI: `brew update && brew upgrade`
 - clean repo: `./dev.sh clean`
-- login to heroku: `heroku login`
 - push code to heroku linked github repo
+- login to heroku: `heroku login`
 - login to [heroku](https://dashboard.heroku.com/apps/aaronmreyes/deploy/github) and manually deploy application
--
+- drop current heroku DB: `heroku run --app aaronmreyes python manage.py flush`
+- migrate heroku database: `heroku run --app aaronmreyes python manage.py migrate`
+- install fixtures for whoami geoip database: `heroku run --app aaronmreyes "for i in whoami/fixtures/*.json; do python manage.py loaddata \$i; done"`
+- create a superuser: `heroku run --app aaronmreyes python manage.py createsuperuser`
