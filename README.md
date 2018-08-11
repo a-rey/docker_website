@@ -8,7 +8,7 @@ My personal Django server running on heroku that I use in personal projects as a
 
 ## Development Notes
 
-- build python virtual environment (may need to update `requirements.txt` software versions too):
+- build python virtual environment (may need to update `requirements.txt` software versions if they are out of date):
 ```
 rm -rf env/
 pip install virtualenv --upgrade
@@ -18,10 +18,12 @@ pip install -r requirements.txt
 ```
 - run dev server: `./dev.sh`
 - exit virtual environment: `deactivate`
+- update `whoami` GeoIP database: `python whoami/fixtures/update_fixtures.py`
 
-## Deployment
+## Deployment Notes
 
 - update heroku CLI: `brew update && brew upgrade`
+- start virtual environment: `source env/bin/activate`
 - clean repo: `./dev.sh clean`
 - push code to heroku linked github repo
 - login to heroku: `heroku login`
