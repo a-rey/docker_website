@@ -8,27 +8,33 @@ My personal Django server running on heroku that I use in personal projects as a
 
 ## Development Notes
 
-- build python virtual environment (may need to update `requirements.txt` software versions if they are out of date):
-```
-rm -rf env/
-pip install virtualenv --upgrade
+May need to update `requirements.txt` software versions if they are out of date.
+
+```bash
+rm -rf env/                               # remove old virtual environment
+pip install virtualenv --upgrade          # rebuild virtual environment
 virtualenv env
-source env/bin/activate
-pip install -r requirements.txt
+source env/bin/activate                   # start virtual environment
+pip install -r requirements.txt           # install application dependencies
+./dev.sh                                  # run dev server
+deactivate                                # exit virtual environment
+python whoami/fixtures/update_fixtures.py # update GeoIP database fixtures
 ```
-- run dev server: `./dev.sh`
-- exit virtual environment: `deactivate`
-- update `whoami` GeoIP database: `python whoami/fixtures/update_fixtures.py`
 
 ## Deployment Notes
 
-- update heroku CLI: `brew update && brew upgrade`
-- start virtual environment: `source env/bin/activate`
-- clean repo: `./dev.sh clean`
-- push code to heroku linked github repo
-- login to heroku: `heroku login`
-- drop current heroku DB: `heroku run --app aaronmreyes python manage.py flush`
-- login to [heroku](https://dashboard.heroku.com/apps/aaronmreyes/deploy/github) and manually deploy application
-- migrate heroku database: `heroku run --app aaronmreyes python manage.py migrate`
-- install fixtures for whoami geoip database: `heroku run --app aaronmreyes "for i in whoami/fixtures/*.json; do python manage.py loaddata \$i; done"`
-- create a superuser: `heroku run --app aaronmreyes python manage.py createsuperuser`
+```bash
+brew update && brew upgrade  # update heroku CLI if needed
+source env/bin/activate
+./dev.sh clean               # clean repo and push code to github
+# login to heroku to manually deploy application:
+# https://dashboard.heroku.com/apps/aaronmreyes/deploy/github
+#############################################
+# Updating fixtures for GeoIP database
+#############################################
+heroku login
+heroku run --app aaronmreyes python manage.py flush
+heroku run --app aaronmreyes python manage.py migrate
+heroku run --app aaronmreyes "for i in whoami/fixtures/*.json-do python manage.py loaddata \$i; done"
+heroku run --app aaronmreyes python manage.py createsuperuser
+```
