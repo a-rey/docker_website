@@ -42,6 +42,15 @@ CSRF_COOKIE_NAME = 'csrf'
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
 CSRF_COOKIE_HTTPONLY = True
 
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-use-sessions
+CSRF_USE_SESSIONS = True
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-samesite
+SESSION_COOKIE_SAMESITE = 'Strict'
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
+SESSION_COOKIE_SECURE = True
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
 X_FRAME_OPTIONS = 'DENY'
 ########## END SECURITY CONFIGURATION
@@ -49,7 +58,7 @@ X_FRAME_OPTIONS = 'DENY'
 
 ########## SESSION CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-name
-SESSION_COOKIE_NAME = 'sid'
+SESSION_COOKIE_NAME = 'wtf'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-expire-at-browser-close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

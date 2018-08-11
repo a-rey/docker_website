@@ -1,7 +1,4 @@
 #!/bin/bash
-
-# Development run script
-
 APP="aaronmreyes"
 
 Red='\033[0;31m';
@@ -10,7 +7,6 @@ BRed='\033[1;31m';
 BGre='\033[1;32m';
 SP='\033[0;36m';
 RCol='\033[0m'
-
 
 echo -e "\n ${BGre}[${APP}] ${SP}checking for python virtual environment..."
 echo -e "${RCol}"
