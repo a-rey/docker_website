@@ -81,7 +81,8 @@ INSTALLED_APPS = [
   'django.contrib.sessions',
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  'whoami',
+  'aaronmreyes',
+  'whois',
 ]
 ########## END APP CONFIGURATION
 
