@@ -37,7 +37,7 @@ printf 'yes' | python manage.py collectstatic
 
 echo -e "\n ${BGre}[${APP}] ${SP}migrating database..."
 echo -e "${RCol}"
-python manage.py makemigrations whoami
+python manage.py makemigrations whois
 python manage.py migrate
 
 echo -e "\n ${BGre}[${APP}] ${SP}freezing current requirements..."
@@ -48,7 +48,7 @@ cat requirements.txt
 
 echo -e "\n ${BGre}[${APP}] ${SP}creating default models..."
 echo -e "${RCol}"
-for i in whoami/fixtures/*.json; do python manage.py loaddata $i; done
+for i in whois/fixtures/*.json; do python manage.py loaddata $i; done
 
 echo -e "\n ${BGre}[${APP}] ${SP}creating surperuser account..."
 echo -e "${RCol}"

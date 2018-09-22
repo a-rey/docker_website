@@ -4,7 +4,8 @@ My personal Django server running on heroku that I use in personal projects as a
 
 ## Apps
 
-- `whoami` Parses client request headers and returns them in JSON with a GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/geoip2/geolite2/) databases.
+- `aaronmreyes` Personal website.
+- `whois` GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/geoip2/geolite2/) databases.
 
 ## Development Notes
 
@@ -12,13 +13,13 @@ May need to update `requirements.txt` software versions if they are out of date.
 
 ```bash
 rm -rf env/                               # remove old virtual environment
-pip install virtualenv --upgrade          # rebuild virtual environment
-virtualenv env
+pip install virtualenv --upgrade          # update virtual environment
+virtualenv env                            # build virtual environment
 source env/bin/activate                   # start virtual environment
 pip install -r requirements.txt           # install application dependencies
+python whois/fixtures/update_fixtures.py  # update GeoIP database fixtures
 ./dev.sh                                  # run dev server
 deactivate                                # exit virtual environment
-python whoami/fixtures/update_fixtures.py # update GeoIP database fixtures
 ```
 
 ## Deployment Notes
@@ -35,6 +36,6 @@ source env/bin/activate
 heroku login
 heroku run --app aaronmreyes python manage.py flush
 heroku run --app aaronmreyes python manage.py migrate
-heroku run --app aaronmreyes "for i in whoami/fixtures/*.json-do python manage.py loaddata \$i; done"
+heroku run --app aaronmreyes "for i in whois/fixtures/*.json-do python manage.py loaddata \$i; done"
 heroku run --app aaronmreyes python manage.py createsuperuser
 ```
