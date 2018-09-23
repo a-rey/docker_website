@@ -10,7 +10,7 @@ kern.run();
 kern.time().delay(1000).kwrite('initializing ...').flush();
 kern.time().delay(1000).kwrite('processing request ...').flush();
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://aaronmreyes.herokuapp.com/whoami/');
+xhr.open('GET' '/whois/');
 xhr.send(null);
 xhr.onreadystatechange = function () {
   if (xhr.readyState == 4) {
