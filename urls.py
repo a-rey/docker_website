@@ -6,7 +6,7 @@ urlpatterns = [
   url(r'^', include(('aaronmreyes.urls', 'aaronmreyes'))),
   url(r'^admin/', admin.site.urls),
   url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS for admin interface styling
-  url(r'^whoami/', include(('whois.urls', 'whois'))),
+  url(r'^whois/', include(('whois.urls', 'whois'))),
 ]
 
 # HTTP errors are handled by aaronmreyes app

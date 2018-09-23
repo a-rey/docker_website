@@ -36,6 +36,6 @@ source env/bin/activate
 heroku login
 heroku run --app aaronmreyes python manage.py flush
 heroku run --app aaronmreyes python manage.py migrate
-heroku run --app aaronmreyes "for i in whois/fixtures/*.json-do python manage.py loaddata \$i; done"
+heroku run --app aaronmreyes "for i in whois/fixtures/*.json; do python manage.py loaddata \$i; done"
 heroku run --app aaronmreyes python manage.py createsuperuser
 ```
