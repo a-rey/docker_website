@@ -45,10 +45,4 @@ def main(request):
       info[k.upper()] = asn[k]
   except:
     pass
-  # set CORs headers
-  r = JsonResponse(info)
-  r['Access-Control-Allow-Origin'] = 'https://www.aaronmreyes.com'
-  r['Access-Control-Allow-Methods'] = 'GET'
-  r['Access-Control-Allow-Credentials'] = 'false'
-  r['Access-Control-Max-Age'] = '-1'
-  return r
+  return JsonResponse(info)
