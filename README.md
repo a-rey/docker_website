@@ -4,8 +4,13 @@ My personal Django server running on heroku that I use in personal projects as a
 
 ## Apps
 
-- `aaronmreyes` Personal website.
+- `aaronmreyes` Personal website https://www.aaronmreyes.com.
 - `whois` GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/geoip2/geolite2/) databases.
+
+## TODO
+
+- add HSTS header to server config
+- add more programs to `aaronmreyes`
 
 ## Development Notes
 
