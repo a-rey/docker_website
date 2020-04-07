@@ -1,41 +1,44 @@
-# Django server with DB backend on Heroku
+#  Docker Django Server
 
-My personal Django server running on heroku that I use in personal projects as a backend
+My personal dockerized django server that I use in personal projects as a backend.
 
-## Apps
+## Architecture Notes:
 
-- `aaronmreyes` Personal website.
-- `whois` GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/geoip2/geolite2/) databases.
+![Architecture](./docs/architecture.png)
 
-## Development Notes
+- [Nginx](https://www.nginx.com/):
+  - Acts as a fast and lightweight [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy)
+  - Provides HTTPS support through [Let's Encrypt](https://letsencrypt.org/) for free
+  - Serves django application static files (no need for [WhiteNoise](http://whitenoise.evans.io/en/stable/))
+- [Gunicorn](https://gunicorn.org/)
+  - Python [WSGI](https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface) HTTP Server for UNIX
+  - Manages django application thread pool
+- [PostgreSQL](https://www.postgresql.org/)
+  - SQL compliant database with django community support
+- [Redis](https://redis.io/)
+  - PostgreSQL request caching through django for UNIX
 
-May need to update `requirements.txt` software versions if they are out of date.
+TODO: `requirements.base` listing
+
+TODO: `docker-compose.yml` listing
+
+## Development Notes:
+
+### [1] Environment Setup:
+
+- [Ubuntu 18.04 LTS amd64 ISO download](https://ubuntu.com/download/server/thank-you?version=18.04.4&architecture=amd64)
+- [Docker CE Install](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+- [Docker Compose Install](https://docs.docker.com/compose/install/)
+- Python3.8 and [pipenv](https://pipenv-fork.readthedocs.io/) install:
 
 ```bash
-rm -rf env/                               # remove old virtual environment
-pip install virtualenv --upgrade          # update virtual environment
-virtualenv env                            # build virtual environment
-source env/bin/activate                   # start virtual environment
-pip install -r requirements.txt           # install application dependencies
-python whois/fixtures/update_fixtures.py  # update GeoIP database fixtures
-./dev.sh                                  # run dev server
-deactivate                                # exit virtual environment
+sudo apt-get update && sudo apt-get upgrade
+sudo apt-get install python3.8 python3-pip
+python3.8 -m pip install --user pipenv
+echo 'export PATH="${HOME}/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
-## Deployment Notes
+## Resources:
 
-```bash
-brew update && brew upgrade  # update heroku CLI if needed
-source env/bin/activate
-./dev.sh clean               # clean repo and push code to github
-# login to heroku to manually deploy application:
-# https://dashboard.heroku.com/apps/aaronmreyes/deploy/github
-#############################################
-# Updating fixtures for GeoIP database
-#############################################
-heroku login
-heroku run --app aaronmreyes python manage.py flush
-heroku run --app aaronmreyes python manage.py migrate
-heroku run --app aaronmreyes "for i in whois/fixtures/*.json; do python manage.py loaddata \$i; done"
-heroku run --app aaronmreyes python manage.py createsuperuser
-```
+- [nginx admin handbook](https://github.com/trimstray/nginx-admins-handbook)
