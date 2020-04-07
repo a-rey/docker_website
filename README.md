@@ -4,6 +4,7 @@ My personal dockerized django server that I use in personal projects as a backen
 
 ## Architecture Notes:
 
+<<<<<<< HEAD
 ![Architecture](./docs/architecture.png)
 
 - [Nginx](https://www.nginx.com/):
@@ -17,6 +18,17 @@ My personal dockerized django server that I use in personal projects as a backen
   - SQL compliant database with django community support
 - [Redis](https://redis.io/)
   - PostgreSQL request caching through django for UNIX
+=======
+- `aaronmreyes` Personal website https://www.aaronmreyes.com.
+- `whois` GeoIP lookup using [MaxMind](https://dev.maxmind.com/geoip/geoip2/geolite2/) databases.
+
+## TODO
+
+- add HSTS header to server config
+- add more programs to `aaronmreyes`
+
+## Development Notes
+>>>>>>> d1c90612f85aefaf9b0280d63e547f0f044d35a3
 
 TODO: `requirements.base` listing
 
@@ -41,4 +53,22 @@ source ~/.bashrc
 
 ## Resources:
 
+<<<<<<< HEAD
 - [nginx admin handbook](https://github.com/trimstray/nginx-admins-handbook)
+=======
+```bash
+brew update && brew upgrade  # update heroku CLI if needed
+source env/bin/activate
+./dev.sh clean               # clean repo and push code to github
+# login to heroku to manually deploy application:
+# https://dashboard.heroku.com/apps/aaronmreyes/deploy/github
+#############################################
+# Updating fixtures for GeoIP database
+#############################################
+heroku login
+heroku run --app aaronmreyes python manage.py flush
+heroku run --app aaronmreyes python manage.py migrate
+heroku run --app aaronmreyes "for i in whois/fixtures/*.json; do python manage.py loaddata \$i; done"
+heroku run --app aaronmreyes python manage.py createsuperuser
+```
+>>>>>>> d1c90612f85aefaf9b0280d63e547f0f044d35a3
