@@ -1,12 +1,12 @@
-from django.shortcuts import render
-
 import datetime
+import django.shortcuts
+
 
 def main(request):
   """
   request handler for '/'.
   """
-  return render(request, 'website/index.html', {})
+  return django.shortcuts.render(request, 'website/index.html', {})
 
 ###############################################################################
 # Global error handlers for website
@@ -20,7 +20,7 @@ def error_404(request):
     't': datetime.datetime.now(),
     'err': '[404 Page Not Found] Invalid path: ' + request.path,
   }
-  return render(request, 'website/error.html', context)
+  return django.shortcuts.render(request, 'website/error.html', context)
 
 def error_500(request):
   """
@@ -30,7 +30,7 @@ def error_500(request):
     't': datetime.datetime.now(),
     'err': '[500 Server Error] Bad Request: ' + request.path,
   }
-  return render(request, 'website/error.html', context)
+  return django.shortcuts.render(request, 'website/error.html', context)
 
 def error_403(request):
   """
@@ -40,7 +40,7 @@ def error_403(request):
     't': datetime.datetime.now(),
     'err': '[403 Permission Denied] Invalid permissions for: ' + request.path,
   }
-  return render(request, 'website/error.html', context)
+  return django.shortcuts.render(request, 'website/error.html', context)
 
 def error_400(request):
   """
@@ -50,4 +50,4 @@ def error_400(request):
     't': datetime.datetime.now(),
     'err': '[400 Bad Request] Bad Request: ' + request.path,
   }
-  return render(request, 'website/error.html', context)
+  return django.shortcuts.render(request, 'website/error.html', context)

@@ -2,8 +2,10 @@
 project development settings
 """
 import os
-import settings.common
 import django.core.management.utils
+
+# import all common settings
+from settings.common import *
 
 
 ########## SECURITY CONFIGURATION
@@ -29,6 +31,21 @@ SESSION_COOKIE_SECURE = False
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['*']
 ########## END HOST CONFIGURATION
+
+
+########## STATIC FILES CONFIGURATION
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+STATIC_URL = '/static/'
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#staticfiles-dirs
+STATICFILES_DIRS = [
+  # add the top level shared static files folder
+  os.path.normpath(os.path.join(BASE_DIR, 'static')),
+]
+########## END STATIC FILES CONFIGURATION
 
 
 ########## DATABASE CONFIGURATION

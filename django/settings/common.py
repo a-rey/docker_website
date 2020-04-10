@@ -1,7 +1,6 @@
 """
 project common settings
 """
-
 import os
 
 ########## PATH CONFIGURATION
@@ -52,7 +51,7 @@ X_FRAME_OPTIONS = 'DENY'
 
 ########## SESSION CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-name
-SESSION_COOKIE_NAME = '\\_(O_o)_/'
+SESSION_COOKIE_NAME = '(O_o)'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-expire-at-browser-close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -80,8 +79,8 @@ INSTALLED_APPS = [
   'django.contrib.sessions',
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  'website',
-  # 'whois',
+  # personal apps
+  'app_website',
 ]
 ########## END APP CONFIGURATION
 
@@ -139,19 +138,4 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 ########## END INTERNATIONALIZATION CONFIGURATION
-
-
-########## STATIC FILES CONFIGURATION
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = '/static/'
-
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# https://docs.djangoproject.com/en/dev/ref/settings/#staticfiles-dirs
-STATICFILES_DIRS = [
-  # add the top level shared static files folder
-  os.path.normpath(os.path.join(BASE_DIR, 'static')),
-]
-########## END STATIC FILES CONFIGURATION
 

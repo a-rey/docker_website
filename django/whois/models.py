@@ -18,6 +18,7 @@ class Block(models.Model):
   latitude = models.FloatField()
   longitude = models.FloatField()
 
+
 class Location(models.Model):
   """
   Specification:
@@ -33,6 +34,7 @@ class Location(models.Model):
   continent_name = models.CharField(max_length=MAX_LEN)
   country_name = models.CharField(max_length=MAX_LEN)
   city_name = models.CharField(max_length=MAX_LEN)
+
 
 class Asn(models.Model):
   """

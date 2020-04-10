@@ -1,16 +1,13 @@
-from django.conf.urls import include
-from django.conf.urls import url
-from django.contrib import admin
+import django.contrib
+import django.conf.urls
 
 urlpatterns = [
-  url(r'^', include(('website.urls', 'website'))),
-  url(r'^whois/', include(('whois.urls', 'whois'))),
-  # TODO: admin site
-  url(r'^null/', admin.site.urls),
+  django.conf.urls.url(r'^', django.conf.urls.include(('app_website.urls', 'app_website'))),
+  django.conf.urls.url(r'^admin/', django.contrib.admin.site.urls),
 ]
 
-# HTTP errors are handled by website app
-handler404 = 'website.views.error_404'
-handler500 = 'website.views.error_500'
-handler403 = 'website.views.error_403'
-handler400 = 'website.views.error_400'
+# HTTP errors are handled by app_website
+handler404 = 'app_website.views.error_404'
+handler500 = 'app_website.views.error_500'
+handler403 = 'app_website.views.error_403'
+handler400 = 'app_website.views.error_400'
