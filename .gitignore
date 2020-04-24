@@ -5,6 +5,8 @@
 secrets/*
 # ignore all development files/folders
 __dev-*
+# ignore all large django fixture files
+django/app_*/fixtures/*.json
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Created by https://www.gitignore.io/api/osx,linux,django
