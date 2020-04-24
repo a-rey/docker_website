@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    env_file:
+      - redis.env
+    ports:
+      - 6379:6379
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - app
+    env_file:
+      - nginx.env
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    env_file:
+      - postgres.env
+    expose:
+      - "5432"
+    networks:
+      - app_network
+
+  app:
+    image: app:latest
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - app.env
+    volumes:
+      - /docker/app/static:/???
+    networks:
+      - app_network
+    command: /usr/bin/gunicorn mydjango.wsgi:application -w 2 -b :8000
+
+networks:
+
+  app_network:
+    driver: bridge

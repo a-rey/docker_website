@@ -23,13 +23,13 @@ WSGI_APPLICATION = 'wsgi.app'
 
 ########## CSRF CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-name
-CSRF_COOKIE_NAME = '0xDEADBEEF'
+CSRF_COOKIE_NAME = '0_o'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
 CSRF_COOKIE_HTTPONLY = True
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-use-sessions
-CSRF_USE_SESSIONS = True
+CSRF_USE_SESSIONS = False
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-samesite
 CSRF_COOKIE_SAMESITE = 'Strict'
@@ -51,12 +51,13 @@ X_FRAME_OPTIONS = 'DENY'
 
 ########## SESSION CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-name
-SESSION_COOKIE_NAME = '(O_o)'
+SESSION_COOKIE_NAME = 'X_x'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-expire-at-browser-close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SESSION_ENGINE
+# https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
@@ -64,9 +65,6 @@ SESSION_COOKIE_HTTPONLY = True
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-samesite
 SESSION_COOKIE_SAMESITE = 'Strict'
-
-# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
-SESSION_COOKIE_SECURE = True
 ########## END SESSION CONFIGURATION
 
 
@@ -76,11 +74,14 @@ INSTALLED_APPS = [
   'django.contrib.admin',
   'django.contrib.auth',
   'django.contrib.contenttypes',
-  'django.contrib.sessions',
+  #'django.contrib.sessions', # NOTE: not needed since sessions are stored in cache
   'django.contrib.messages',
   'django.contrib.staticfiles',
-  # personal apps
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # website applications:
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   'app_website',
+  'app_whoami',
 ]
 ########## END APP CONFIGURATION
 
@@ -104,9 +105,9 @@ MIDDLEWARE = [
 TEMPLATES = [
   {
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'APP_DIRS': True, # look inside /<app>/template
+    'APP_DIRS': True, # look inside /<app>/templates
     'DIRS': [
-      # add the top level shared templates folder
+      # add a top level shared templates folder
       os.path.normpath(os.path.join(BASE_DIR, 'templates')),
     ],
     'OPTIONS': {

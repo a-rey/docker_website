@@ -38,12 +38,12 @@ ALLOWED_HOSTS = ['*']
 STATIC_URL = '/static/'
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, '__dev-staticfiles')
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#staticfiles-dirs
 STATICFILES_DIRS = [
-  # add the top level shared static files folder
-  os.path.normpath(os.path.join(BASE_DIR, 'static')),
+  # add a top level shared static folder
+  # os.path.normpath(os.path.join(BASE_DIR, 'static')),
 ]
 ########## END STATIC FILES CONFIGURATION
 
@@ -53,7 +53,7 @@ STATICFILES_DIRS = [
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    'NAME': os.path.join(BASE_DIR, '__dev-db.sqlite3'),
     'USER': '',
     'PASSWORD': '',
     'HOST': '',
@@ -65,9 +65,10 @@ DATABASES = {
 
 ########## CACHE CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
+# https://docs.djangoproject.com/en/dev/topics/cache/
 CACHES = {
   'default': {
-    'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
   }
 }
 ########## END CACHE CONFIGURATION

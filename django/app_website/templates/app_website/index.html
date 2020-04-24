@@ -1,0 +1,27 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>arey.dev</title>
+    <meta name="description" content="null">
+    <meta name="author" content="0xdeadbeef">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline';">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'app_website/img/favicon.ico' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'app_website/css/style.css' %}">
+  </head>
+  <body>
+    <div id="monitor"></div>
+    <!-- user /bin programs -->
+    <script type="text/javascript" src="{% static 'app_website/js/bin/ls.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app_website/js/bin/help.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app_website/js/bin/pong.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app_website/js/bin/shell.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app_website/js/bin/whoami.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app_website/js/bin/hexdump.js' %}"></script>
+    <!-- core code: -->
+    <script type="text/javascript" src="{% static 'app_website/js/kernel.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app_website/js/boot.js' %}"></script>
+  </body>
+</html>

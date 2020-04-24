@@ -17,16 +17,13 @@ body {
   height: 100%;
   float: left;
   padding: 10px;
+  font-size: 13px;
+  color: #f7f7f7;
+  font-weight: 300;
 }
 
 a {
   text-decoration: none;
-}
-
-#terminal {
-  font-size: 13px;
-  color: #f7f7f7;
-  font-weight: 300;
 }
 
 .line {
@@ -38,14 +35,34 @@ a {
 }
 
 .hidden {
-  position: absolute;
-  left:  -1px;
-  right: -1px;
-  height: 1px;
-  width: 1px;
+  display: none !important;
 }
 
-#prompt-wrapper {
+.log_err, .color_red {
+  color: red;
+}
+
+.log_warn, .color_orange {
+  color: orange;
+}
+
+.log_info, .color_cyan {
+  color: cyan;
+}
+
+.log_success, .color_lime {
+  color: lime;
+}
+
+.color_violet {
+  color: violet;
+}
+
+.color_royalblue {
+  color: royalblue;
+}
+
+.prompt_wrapper {
   float: left;
   width: 100%;
   display: block;
@@ -53,7 +70,7 @@ a {
   padding: 0;
 }
 
-#prompt-icon {
+.prompt_user {
   display: block;
   float: left;
   margin: 0;
@@ -63,7 +80,7 @@ a {
   font-family: inherit;
 }
 
-#prompt {
+.prompt {
   border: none;
   background: none;
   color: #f7f7f7;
@@ -73,7 +90,7 @@ a {
   padding: 0;
 }
 
-#prompt:focus {
+.prompt:focus {
   outline: none;
 }
 
