@@ -1,12 +1,18 @@
-version: "3"
+version: "3.8"
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# docker containers:
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 services:
 
   redis:
     image: redis:latest
     restart: unless-stopped
+    container_name: redis
+    volumes:
+      - redis_data:/data
     env_file:
-      - redis.env
+      - ../secrets/redis.env
     ports:
       - 6379:6379
     networks:
@@ -15,48 +21,62 @@ services:
   nginx:
     image: nginx:alpine
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: nginx.Dockerfile
-    ports:
-      - 80:80
+    container_name: nginx
+    volumes:
+      - app_staticfiles:/staticfiles
+    env_file:
+      - ../secrets/nginx.env
     depends_on:
       - app
-    env_file:
-      - nginx.env
+    ports:
+      - 80:80
     networks:
       - app_network
 
   postgres:
     image: postgres:latest
     restart: unless-stopped
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - postgres.env
-    expose:
-      - "5432"
+      - ../secrets/postgres.env
+    ports:
+      - 5432:5432
     networks:
       - app_network
 
   app:
     image: app:latest
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: app.Dockerfile
-    ports:
-      - 8000:8000
+    container_name: app
+    volumes:
+      - app_staticfiles:/app/staticfiles
+    env_file:
+      - ../secrets/app.env
     depends_on:
       - postgres
       - redis
-    env_file:
-      - app.env
-    volumes:
-      - /docker/app/static:/???
+    ports:
+      - 8000:8000
     networks:
       - app_network
-    command: /usr/bin/gunicorn mydjango.wsgi:application -w 2 -b :8000
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# docker networks:
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 networks:
 
   app_network:
     driver: bridge
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# docker volumes:
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+volumes:
+
+  redis_data:
+  postgres_data:
+  app_staticfiles:

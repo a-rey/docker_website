@@ -20,17 +20,12 @@ _NOTE:_ diagram made with https://draw.io
 - [Redis](https://redis.io/)
   - PostgreSQL request caching through django for UNIX
 
-## Development Notes:
-
-### Host Setup:
+## Host Setup:
 
 - [Ubuntu 18.04 LTS amd64 ISO download](https://ubuntu.com/download/server/thank-you?version=18.04.4&architecture=amd64)
-
 - [Docker CE Install](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
-
 - [Docker Compose Install](https://docs.docker.com/compose/install/)
-
-- Install Python3.7 and pipenv
+- Install Python3.7 and [pipenv](https://pipenv.pypa.io/en/latest/):
 
   ```bash
   sudo apt-get update && sudo apt-get upgrade
@@ -40,14 +35,18 @@ _NOTE:_ diagram made with https://draw.io
   source ~/.bashrc
   ```
 
-- Install Django dependencies
+- Install Django application dependencies:
 
   ```bash
-  sudo apt-get install -y python3.7-dev libpq-dev # psycopg2 build dependencies 
-  pipenv install
+  sudo apt-get install -y \
+  	libpq-dev \
+    python3.7-dev \
+    build-essential \
+    python3-setuptools # psycopg2 (Python postgresql) dependencies 
+  cd django && pipenv install --dev
   ```
 
-- Remove Ubuntu snapd
+- Remove Ubuntu snapd:
 
   ```bash
   sudo apt autoremove --purge snapd gnome-software-plugin-snap
@@ -55,26 +54,26 @@ _NOTE:_ diagram made with https://draw.io
   rm -fr ~/snap
   ```
 
-### Development Workflow Overview:
+## Django Application Development Notes:
 
 ```bash
-pipenv shell                                       # start virtualenv shell
-cd django                                          # enter project directory
-find . -name \*.pyc -delete                        # remove old Python bytecode
-rm -rf dev-*                                       # remove old dev files
 export DJANGO_SETTINGS_MODULE=settings.development # set django settings module
-printf 'yes' | python manage.py collectstatic      # recollect static files 
+cd django                                          # enter project directory
+pipenv shell                                       # start virtualenv shell
+rm -rf __dev-*                                     # remove old dev files
+python manage.py collectstatic --no-input          # recollect static files 
 python manage.py migrate                           # setup database schema
 python manage.py runserver 0.0.0.0:8000            # spin up django app
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MISC development commands
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 python manage.py createsuperuser          # add test admin user to database
-python manage.py loaddata app_whoami.json # load fixture JSON (takes a while)
+python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
 python manage.py flush                    # drop all data in each DB table
+exit                                      # exit virtual environment
 ```
 
-### MaxMind GeoIP Database Management Notes:
+## MaxMind GeoIP Database Management Notes:
 
 - MaxMind account creation:
 
@@ -95,44 +94,115 @@ python manage.py flush                    # drop all data in each DB table
 - Updating django JSON fixture file `app_whoami.json`:
 
   ```bash
+  cd django                                 # enter project directory
   pipenv shell                              # start virtualenv shell
-  cd django/app_whoami/fixtures             # enter fixtures directory
+  cd app_whoami/fixtures                    # enter fixtures directory
   ./update.py -k ../../../secrets/geoip.key # generate new JSON fixture
   ```
 
-- Loading django JSON fixture `app_whoami.json` into DB:
+- Loading Django JSON fixture `app_whoami.json` into DB:
 
-  - Connect to the DB:
+  - **DEVELOPMENT:**
 
-    ```bash
-    pipenv shell             # start virtualenv shell
-    cd django                # enter project directory
-    python manage.py dbshell # start a DB SQL shell
-    ```
+    - Connect to the DB:
 
-  - **[DEVELOPMENT]** remove old table data:
+      ```bash
+      cd django                # enter project directory
+      pipenv shell             # start virtualenv shell
+      python manage.py dbshell # start a DB SQL shell
+      ```
 
-    ```sql
-    SELECT name FROM sqlite_master WHERE name LIKE '%whoami%'; -- get app tables
-    DELETE FROM <table_name>;                                  -- drop table data
-    ```
+    - _-- If Django DB schema has **not** changed --_ remove old table data:
 
-  - **[PRODUCTION]** remove old table data:
+      ```mysql
+      SELECT name FROM sqlite_master WHERE name LIKE '%whoami%'; -- get app tables
+      DELETE FROM <table_name>;                                  -- drop table data
+      .exit                                                      -- exit db connection
+      ```
+
+    - _-- If Django DB schema **has** changed --_ delete tables:
+
+      ```mysql
+      SELECT name FROM sqlite_master WHERE name LIKE '%whoami%'; -- get app tables
+      DROP TABLE <table_name>;                                   -- drop table
+      .exit                                                      -- exit db connection
+      ```
+
+    - Import the new fixtures:
+
+      ```bash
+      python manage.py migrate                  # re-create any broken tables
+      python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
+      exit                                      # exit virtual environment
+      ```
+
+  - **PRODUCTION:** 
 
     ```sql
     TODO
     ```
 
-  - Import new fixture into DB:
+## Production Notes:
+
+- Build django application image:
+
+  ```bash
+  sudo systemctl stop web                                # stop application if running
+  sudo docker rmi --force app:latest                     # delete old app image
+  sudo docker build --tag app -f docker/app.Dockerfile . # rebuild image
+  ```
+
+- Install docker-compose service:
+
+  - Create a `/etc/systemd/system/web.service` file with the following content:
+
+    - **NOTE:** replace `<path to docker-compose.yml>` below with host system's path
 
     ```bash
-    python manage.py loaddata app_whoami.json # load fixture JSON (takes a while)
+    [Unit]
+    Description=Docker Compose App Service
+    Requires=docker.service
+    After=docker.service
+    
+    [Service]
+    Type=oneshot
+    RemainAfterExit=yes
+    ExecStart=/usr/local/bin/docker-compose -f <path to docker-compose.yml> up -d
+    ExecStop=/usr/local/bin/docker-compose -f <path to docker-compose.yml> down
+    TimeoutStartSec=0
+    
+    [Install]
+    WantedBy=multi-user.target
     ```
 
-## Application Secrets
+  - Install the service:
+
+    ```bash
+    sudo systemctl enable web
+    ```
+
+    
+
+  
+
+- Helpful debugging commands:
+
+  ```bash
+  # spawn a bash shell in Django application container
+  sudo docker run -it --entrypoint /bin/bash --env-file secrets/app.env app -s
+  ```
+
+  
+
+
+
+## Application Secrets:
 
 - `geoip.key`: MaxMind account license key for GeoIPLite2 database offline downloads
-- `???`
+- `app.env`: Django application environmental variables
+  - `DJANGO_SETTINGS_MODULE`: [variable documentation](https://docs.djangoproject.com/en/dev/topics/settings/#envvar-DJANGO_SETTINGS_MODULE)
+  - `GUNICORN_ARGS`: [variable documentation](https://docs.gunicorn.org/en/latest/settings.html#settings)
+  - 
 
 ## Resources:
 

@@ -27,7 +27,7 @@ SESSION_COOKIE_SECURE = True
 
 ########## HOST CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['www.aaronmreyes.com']
+ALLOWED_HOSTS = ['www.arey.dev']
 ########## END HOST CONFIGURATION
 
 
@@ -41,7 +41,16 @@ DATABASES = {
 
 
 ########## STATIC FILES CONFIGURATION
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+STATIC_URL = '/static/'
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#staticfiles-dirs
+STATICFILES_DIRS = [
+  # add a top level shared static folder
+  # os.path.normpath(os.path.join(BASE_DIR, 'static')),
+]
 ########## END STATIC FILES CONFIGURATION
 
