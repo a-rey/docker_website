@@ -13,3 +13,4 @@ psycopg2 = ">=2.8.5"
 
 [requires]
 python_version = "3.7"
+
