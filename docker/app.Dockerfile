@@ -18,6 +18,7 @@ RUN \
           libpq-dev \
           build-essential \
     # install application Python dependencies
+    && python3.7 -m pip install --upgrade pip \
     && python3.7 -m pip install --no-cache-dir pipenv \
     && cd /app \
     && pipenv lock -r > requirements.txt \
