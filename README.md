@@ -29,7 +29,7 @@ _NOTE:_ diagram made with https://draw.io
   - See: https://redis.io/topics/persistence
 - All sensitive production configuration files are stored in a directory called `secrets` which is not tracked by Git. 
   - See: `Application Secrets` README section below for more information
-- **[TODO]** Move all docker containers to not run as `root` (TODO: which ones?)
+- **[TODO]** Move all docker containers to not run as `root` (needed for all but `app`)
 - **[TODO]** Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
 
 ## Host Setup:
@@ -163,13 +163,20 @@ exit                                      # exit virtual environment
     ```
 - Helpful debugging commands:
   ```bash
-  # spawn a bash shell in Django application container
-  sudo docker run -it --entrypoint /bin/bash --env-file secrets/app.env app -s
+  # test bring up all the services
+  sudo docker-compose -f docker/docker-compose.yml up -d
+  # spawn a bash shell in a running container
+  sudo docker exec -it <container_name> /bin/bash
+  # stop all running services
+  sudo docker-compose -f docker/docker-compose.yml down
+  # delete all docker volumes
+  sudo docker volume rm $(sudo docker volume ls -q)
   # stop all running containers
   sudo docker stop $(sudo docker ps -aq)
   # delete all containers
   sudo docker rm $(sudo docker ps -aq)
-  # delete unifi docker image
+  # create a standalone container with bash as entrypoint
+  sudo docker run -it --entrypoint /bin/bash <container_name> -s
   ```
 
 ## Application Secrets:
@@ -189,7 +196,7 @@ exit                                      # exit virtual environment
   - [`POSTGRES_HOST`](https://docs.djangoproject.com/en/dev/ref/settings/#databases)
   - [`POSTGRES_DB`](https://hub.docker.com/_/postgres/)
   - [`POSTGRES_USER`](https://hub.docker.com/_/postgres/)
-  - [`POSTGRES_PASS`](https://hub.docker.com/_/postgres/)
+  - [`POSTGRES_PASSWORD`](https://hub.docker.com/_/postgres/)
 - `redis.env`: Redis environmental variables for [`django-redis`](https://github.com/jazzband/django-redis) Django plugin in the Django Docker container
   - [`REDIS_DB`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_TTL`](https://docs.djangoproject.com/en/dev/ref/settings/#timeout)
@@ -198,6 +205,7 @@ exit                                      # exit virtual environment
   - [`REDIS_CONNECTION_TYPE`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_PASS`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
 - `redis.password.conf`: Redis default user password using `requirepass` config option.
+    
     - **NOTE**: password must match the `REDIS_PASS` value in `redis.env`
 
 ## Resources:
