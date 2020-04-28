@@ -1,30 +1,27 @@
-FROM ubuntu:bionic
+# https://pythonspeed.com/articles/base-image-python-docker-images/
+FROM python:3.7-slim-buster
 
 # https://docs.python.org/3/using/cmdline.html#cmdoption-u
 ENV PYTHONUNBUFFERED 1
 # https://docs.python.org/3/using/cmdline.html#id1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-# add application code into container
+# add application code to container
 COPY ./docker/app.docker-entrypoint.sh /docker-entrypoint.sh
 COPY ./django /app
 
 RUN \
     # update system packages
        apt-get update \
-    # install system python packages
+    # install python package build dependencies
     && apt-get install -y --no-install-recommends \
           libpq-dev \
-          python3.7 \
-          python3-pip \
-          python3.7-dev \
           build-essential \
-          python3-setuptools \
     # install application Python dependencies
     && python3.7 -m pip install --no-cache-dir pipenv \
     && cd /app \
     && pipenv lock -r > requirements.txt \
-    && pipenv --rm \
+    && pipenv --rm --clear \
     && python3.7 -m pip uninstall -y pipenv \
     && python3.7 -m pip install --no-cache-dir -r requirements.txt \
     # make entry executable
@@ -35,9 +32,6 @@ RUN \
     && chown -R app:app /app \
     # layer cleanup
     && apt-get purge -y --auto-remove \
-          libpq-dev \
-          python3-pip \
-          python3.7-dev \
           build-essential \
     && apt-get autoremove -y \
     && apt-get clean \

@@ -1,29 +1,17 @@
-version: "3.8"
+version: "3"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # docker containers:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 services:
 
-  redis:
-    image: redis:latest
-    restart: unless-stopped
-    container_name: redis
-    volumes:
-      - redis_data:/data
-    env_file:
-      - ../secrets/redis.env
-    ports:
-      - 6379:6379
-    networks:
-      - app_network
-
   nginx:
-    image: nginx:alpine
+    image: nginx:latest
     restart: unless-stopped
     container_name: nginx
     volumes:
-      - app_staticfiles:/staticfiles
+      - django_staticfiles:/usr/share/nginx/html:ro
+      # - ./nginx.conf:/etc/nginx/nginx.conf:ro
     env_file:
       - ../secrets/nginx.env
     depends_on:
@@ -31,52 +19,69 @@ services:
     ports:
       - 80:80
     networks:
-      - app_network
-
-  postgres:
-    image: postgres:latest
-    restart: unless-stopped
-    container_name: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ../secrets/postgres.env
-    ports:
-      - 5432:5432
-    networks:
-      - app_network
+      - app_frontend_network
 
   app:
     image: app:latest
     restart: unless-stopped
     container_name: app
     volumes:
-      - app_staticfiles:/app/staticfiles
+      - django_staticfiles:/app/__staticfiles:rw
     env_file:
-      - ../secrets/app.env
+      - ../secrets/redis.env
+      - ../secrets/django.env
+      - ../secrets/postgres.env
     depends_on:
       - postgres
       - redis
     ports:
-      - 8000:8000
+      - 127.0.0.1:8000:8000
     networks:
-      - app_network
+      - app_frontend_network
+      - app_backend_network
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    container_name: redis
+    volumes:
+      - ./redis.conf:/redis.conf:ro
+      - ../secrets/redis.secrets.conf:/redis.secrets.conf:ro
+    ports:
+      - 127.0.0.1:6379:6379
+    networks:
+      - app_backend_network
+    command: ['redis-server', '/redis.conf']
+
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:rw
+    env_file:
+      - ../secrets/postgres.env
+    ports:
+      - 127.0.0.1:5432:5432
+    networks:
+      - app_backend_network
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # docker networks:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 networks:
 
-  app_network:
+  app_frontend_network:
+    driver: bridge
+
+  app_backend_network:
     driver: bridge
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # docker volumes:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 volumes:
 
-  redis_data:
   postgres_data:
-  app_staticfiles:
+
+  django_staticfiles:

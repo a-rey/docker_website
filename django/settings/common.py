@@ -60,6 +60,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+# https://docs.djangoproject.com/en/3.0/ref/settings/#session-cache-alias
+SESSION_CACHE_ALIAS = 'default'
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
 SESSION_COOKIE_HTTPONLY = True
 
