@@ -166,51 +166,38 @@ exit                                      # exit virtual environment
   # spawn a bash shell in Django application container
   sudo docker run -it --entrypoint /bin/bash --env-file secrets/app.env app -s
   # stop all running containers
-sudo docker stop $(sudo docker ps -aq)
+  sudo docker stop $(sudo docker ps -aq)
   # delete all containers
   sudo docker rm $(sudo docker ps -aq)
   # delete unifi docker image
   ```
-  
-  
-
-
 
 ## Application Secrets:
 
 - `geoip.key`: Contains MaxMind account license key for GeoIPLite2 database offline downloads
-
 - `app.env`: Django Docker application container environmental variables
-  
   - [`DJANGO_SETTINGS_MODULE`](https://docs.djangoproject.com/en/dev/topics/settings/#envvar-DJANGO_SETTINGS_MODULE)
   - [`GUNICORN_ARGS`](https://docs.gunicorn.org/en/latest/settings.html#settings)
   - [`DJANGO_DEBUG`](https://docs.djangoproject.com/en/dev/ref/settings/#debug)
   - [`DJANGO_SECRET_KEY`](https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY):
-    
     ```python
     import django.core.management.utils
     django.core.management.utils.get_random_secret_key()
     ```
-  
 - `postgres.env`: PostgreSQL Docker container environmental variables
-    
-    - [`POSTGRES_PORT`](https://docs.djangoproject.com/en/dev/ref/settings/#databases)
-    - [`POSTGRES_HOST`](https://docs.djangoproject.com/en/dev/ref/settings/#databases)
-    - [`POSTGRES_DB`](https://hub.docker.com/_/postgres/)
-    - [`POSTGRES_USER`](https://hub.docker.com/_/postgres/)
+  - [`POSTGRES_PORT`](https://docs.djangoproject.com/en/dev/ref/settings/#databases)
+  - [`POSTGRES_HOST`](https://docs.djangoproject.com/en/dev/ref/settings/#databases)
+  - [`POSTGRES_DB`](https://hub.docker.com/_/postgres/)
+  - [`POSTGRES_USER`](https://hub.docker.com/_/postgres/)
   - [`POSTGRES_PASS`](https://hub.docker.com/_/postgres/)
-  
 - `redis.env`: Redis environmental variables for [`django-redis`](https://github.com/jazzband/django-redis) Django plugin in the Django Docker container
-    
   - [`REDIS_DB`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_TTL`](https://docs.djangoproject.com/en/dev/ref/settings/#timeout)
   - [`REDIS_PORT`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_HOST`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_CONNECTION_TYPE`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_PASS`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
-  
 - `redis.password.conf`: Redis default user password using `requirepass` config option.
-
     - **NOTE**: password must match the `REDIS_PASS` value in `redis.env`
 
 ## Resources:
