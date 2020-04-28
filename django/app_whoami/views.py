@@ -2,6 +2,7 @@ import decimal
 import ipaddress
 
 import django.http
+import django.core.cache
 
 import app_whoami.models
 
@@ -24,7 +25,10 @@ def main(request):
     results = {'IP': str(ip)}
   except:
     return django.http.JsonResponse({'error': 'IP header value invalid'})
-  # lookup ASN IP block
+  # check cache if IP already looked up
+  if int(ip) in django.core.cache.cache:
+    return django.http.JsonResponse(django.core.cache.cache.get(int(ip)))
+  # lookup ASN IP block in database
   asn_blk = app_whoami.models.AsnBlock.objects.filter(
     ip_start__lte=decimal.Decimal(int(ip)),
     ip_end__gte=decimal.Decimal(int(ip)),
@@ -59,4 +63,6 @@ def main(request):
     results['created_at'] = results['created_at'].strftime('%d %b %Y %H:%M:%S %Z')
   # change keys to be uppercase
   results = {k.upper(): v for k, v in results.items()}
+  # store result in cache for a faster hit next lookup request
+  django.core.cache.cache.set(int(ip), results)
   return django.http.JsonResponse(results)

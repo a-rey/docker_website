@@ -21,7 +21,7 @@ RUN \
     && python3.7 -m pip install --no-cache-dir pipenv \
     && cd /app \
     && pipenv lock -r > requirements.txt \
-    && pipenv --rm \
+    && pipenv --rm --clear \
     && python3.7 -m pip uninstall -y pipenv \
     && python3.7 -m pip install --no-cache-dir -r requirements.txt \
     # make entry executable
