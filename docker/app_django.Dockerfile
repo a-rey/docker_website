@@ -6,8 +6,12 @@ ENV PYTHONUNBUFFERED 1
 # https://docs.python.org/3/using/cmdline.html#id1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-# add application code to container
-COPY ./docker/app.docker-entrypoint.sh /docker-entrypoint.sh
+# local image user ID and group ID to not run as root
+ENV USER_UID 6969
+ENV USER_GID 6969
+
+# add application code to image
+COPY ./docker/app_django.entrypoint.sh /app-entrypoint.sh
 COPY ./django /app
 
 RUN \
@@ -26,11 +30,14 @@ RUN \
     && python3.7 -m pip uninstall -y pipenv \
     && python3.7 -m pip install --no-cache-dir -r requirements.txt \
     # make entry executable
-    && chmod +x /docker-entrypoint.sh \
-    # create app user and chown app files
-    && groupadd app \
-    && useradd --no-log-init -r -g app app \
-    && chown -R app:app /app \
+    && chmod +x /app-entrypoint.sh \
+    # create image user and chown files
+    && groupadd -g $USER_GID _user \
+    && useradd --no-log-init -r -u $USER_UID -g $USER_GID _user \
+    # make expected volume mounts and files
+    && mkdir -p /app/__staticfiles \
+    # chown image mounts and files
+    && chown -R ${USER_GID}:${USER_GID} /app \
     # layer cleanup
     && apt-get purge -y --auto-remove \
           build-essential \
@@ -42,9 +49,9 @@ RUN \
           /var/tmp/* \
           /var/lib/apt/lists/*
 
-WORKDIR /app
+# define application volume for Django static files
+VOLUME ['/app/__staticfiles']
 
-USER app
+USER _user
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
-
+ENTRYPOINT ['/app-entrypoint.sh']

@@ -22,6 +22,8 @@ _NOTE:_ diagram made with https://draw.io
 
 ## Design Decision Notes & TODO:
 
+- **[TODO]** Move all docker containers to not run as `root` 
+- **[TODO]** Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
 - Django application _caches_ the entire session context in Redis instead of using PostgreSQL for write-though persistent sessions. Session context cache misses are currently only applicable for the Django admin application, and therefore unlikely. To enable persistent sessions, uncomment `'django.contrib.sessions'` in `INSTALLED_APPS` for `django/settings/common.py` and change `SESSION_ENGINE` to `django.contrib.sessions.backends.cached_db`. 
   - See: https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions
 - Docker production design splits the internal Docker network into a fontend (Nginx) and backend (PostgreSQL & Redis) with the Django `app` container serving as the link between the two for better container isolation.
@@ -29,8 +31,6 @@ _NOTE:_ diagram made with https://draw.io
   - See: https://redis.io/topics/persistence
 - All sensitive production configuration files are stored in a directory called `secrets` which is not tracked by Git. 
   - See: `Application Secrets` README section below for more information
-- **[TODO]** Move all docker containers to not run as `root` (needed for all but `app`)
-- **[TODO]** Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
 
 ## Host Setup:
 
@@ -134,9 +134,9 @@ exit                                      # exit virtual environment
 
 - Build django application image from current application source:
   ```bash
-  sudo systemctl stop web                                # stop application if running
-  sudo docker rmi --force app:latest                     # delete old app image
-  sudo docker build --tag app -f docker/app.Dockerfile . # rebuild image
+  sudo systemctl stop web                                              # stop app
+  sudo docker rmi --force app_django:latest                            # delete app
+  sudo docker build --tag app_django -f docker/app_django.Dockerfile . # rebuild app
   ```
 - Install docker-compose `web` service:
   - Create a `/etc/systemd/system/web.service` file with the following content:

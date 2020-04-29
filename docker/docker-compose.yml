@@ -6,25 +6,30 @@ version: "3"
 services:
 
   nginx:
-    image: nginx:latest
+    image: app_nginx:latest
+    build:
+      context: .
+      dockerfile: app_nginx.Dockerfile
     restart: unless-stopped
     container_name: nginx
     volumes:
       - django_staticfiles:/__staticfiles:ro
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     env_file:
       - ../secrets/nginx.env
     depends_on:
-      - app
+      - django
     ports:
-      - 80:80
+      - 80:8000
     networks:
       - app_frontend_network
 
-  app:
-    image: app:latest
+  django:
+    image: app_django:latest
+    build:
+      context: .
+      dockerfile: app_django.Dockerfile
     restart: unless-stopped
-    container_name: app
+    container_name: django
     volumes:
       - django_staticfiles:/app/__staticfiles:rw
     env_file:
@@ -41,21 +46,24 @@ services:
       - app_backend_network
 
   redis:
-    image: redis:latest
+    image: app_redis:latest
+    build:
+      context: .
+      dockerfile: app_redis.Dockerfile
     restart: unless-stopped
     container_name: redis
     volumes:
       - redis_data:/data:rw
-      - ./redis.conf:/redis.conf:ro
-      - ../secrets/redis.secrets.conf:/redis.secrets.conf:ro
     ports:
       - 127.0.0.1:6379:6379
     networks:
       - app_backend_network
-    command: ['redis-server', '/redis.conf']
 
   postgres:
-    image: postgres:latest
+    image: app_postgres:latest
+    build:
+      context: .
+      dockerfile: app_postgres.Dockerfile
     restart: unless-stopped
     container_name: postgres
     volumes:
