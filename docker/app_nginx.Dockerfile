@@ -26,8 +26,8 @@ RUN \
     && chown -R ${USER_GID}:${USER_GID} /var/run/nginx.pid
 
 # define application volume for Django static files
-VOLUME ['/__staticfiles']
+VOLUME ["/__staticfiles"]
 
 USER app_nginx
 
-ENTRYPOINT ['/app-entrypoint.sh']
+ENTRYPOINT ["/app-entrypoint.sh"]

@@ -50,8 +50,8 @@ RUN \
           /var/lib/apt/lists/*
 
 # define application volume for Django static files
-VOLUME ['/app/__staticfiles']
+VOLUME ["/app/__staticfiles"]
 
 USER app_django
 
-ENTRYPOINT ['/app-entrypoint.sh']
+ENTRYPOINT ["/app-entrypoint.sh"]

@@ -17,4 +17,4 @@ RUN \
 
 USER redis
 
-ENTRYPOINT ['/app-entrypoint.sh']
+ENTRYPOINT ["/app-entrypoint.sh"]
