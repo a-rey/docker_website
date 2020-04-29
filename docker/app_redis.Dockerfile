@@ -10,7 +10,7 @@ COPY ./docker/redis.conf /redis.conf
 
 RUN \
     # make entry executable
-    && chmod +x /app-entrypoint.sh \
+       chmod +x /app-entrypoint.sh \
     # chown image mounts and files
     && chown -R redis:redis /redis.secrets.conf \
     && chown -R redis:redis /redis.conf
