@@ -3,5 +3,5 @@
 #     so we use have to use that user ...
 FROM postgres:latest
 
-# use parent image ENTRYPOINT
+# use parent image ENTRYPOINT (no need for a seperate app-entrypoint.sh)
 USER postgres
