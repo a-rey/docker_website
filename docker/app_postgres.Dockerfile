@@ -12,4 +12,4 @@ RUN \
 
 USER postgres
 
-ENTRYPOINT ['/app-entrypoint.sh']
+#ENTRYPOINT ['docker-entrypoint.sh']
