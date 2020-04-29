@@ -17,8 +17,8 @@ RUN \
     # make entry executable
     && chmod +x /app-entrypoint.sh \
     # create image user
-    && groupadd -g $USER_GID _user \
-    && useradd --no-log-init -r -u $USER_UID -g $USER_GID _user \
+    && groupadd -g $USER_GID app_nginx \
+    && useradd --no-log-init -r -u $USER_UID -g $USER_GID app_nginx \
     # chown image mounts and files
     && chown -R ${USER_GID}:${USER_GID} /__staticfiles \
     && chown -R ${USER_GID}:${USER_GID} /var/cache/nginx \
@@ -28,6 +28,6 @@ RUN \
 # define application volume for Django static files
 VOLUME ['/__staticfiles']
 
-USER _user
+USER app_nginx
 
 ENTRYPOINT ['/app-entrypoint.sh']

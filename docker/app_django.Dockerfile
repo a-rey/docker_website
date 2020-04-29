@@ -32,8 +32,8 @@ RUN \
     # make entry executable
     && chmod +x /app-entrypoint.sh \
     # create image user and chown files
-    && groupadd -g $USER_GID _user \
-    && useradd --no-log-init -r -u $USER_UID -g $USER_GID _user \
+    && groupadd -g $USER_GID app_django \
+    && useradd --no-log-init -r -u $USER_UID -g $USER_GID app_django \
     # make expected volume mounts and files
     && mkdir -p /app/__staticfiles \
     # chown image mounts and files
@@ -52,6 +52,6 @@ RUN \
 # define application volume for Django static files
 VOLUME ['/app/__staticfiles']
 
-USER _user
+USER app_django
 
 ENTRYPOINT ['/app-entrypoint.sh']

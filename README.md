@@ -132,11 +132,14 @@ exit                                      # exit virtual environment
 
 ## Production Notes:
 
-- Build django application image from current application source:
+- Build application images:
   ```bash
-  sudo systemctl stop web                                              # stop app
-  sudo docker rmi --force app_django:latest                            # delete app
-  sudo docker build --tag app_django -f docker/app_django.Dockerfile . # rebuild app
+  sudo systemctl stop web                                                  # stop apps
+  sudo docker rmi $(sudo docker images -aq)                                # delete apps
+  sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild app
+  sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild app
+  sudo docker build --tag app_postgres -f docker/app_postgres.Dockerfile . # rebuild app
+  sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild app
   ```
 - Install docker-compose `web` service:
   - Create a `/etc/systemd/system/web.service` file with the following content:
@@ -175,8 +178,10 @@ exit                                      # exit virtual environment
   sudo docker stop $(sudo docker ps -aq)
   # delete all containers
   sudo docker rm $(sudo docker ps -aq)
+  # delete all docker images
+  sudo docker rmi $(sudo docker images -aq)
   # create a standalone container with bash as entrypoint
-  sudo docker run -it --entrypoint /bin/bash <container_name> -s
+  sudo docker run -it --entrypoint /bin/bash <image_name> -s
   ```
 
 ## Application Secrets:
@@ -187,6 +192,7 @@ exit                                      # exit virtual environment
   - [`GUNICORN_ARGS`](https://docs.gunicorn.org/en/latest/settings.html#settings)
   - [`DJANGO_DEBUG`](https://docs.djangoproject.com/en/dev/ref/settings/#debug)
   - [`DJANGO_SECRET_KEY`](https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY):
+    
     ```python
     import django.core.management.utils
     django.core.management.utils.get_random_secret_key()
