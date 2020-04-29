@@ -7,9 +7,6 @@ services:
 
   nginx:
     image: app_nginx:latest
-    build:
-      context: .
-      dockerfile: app_nginx.Dockerfile
     restart: unless-stopped
     container_name: nginx
     volumes:
@@ -25,9 +22,6 @@ services:
 
   django:
     image: app_django:latest
-    build:
-      context: .
-      dockerfile: app_django.Dockerfile
     restart: unless-stopped
     container_name: django
     volumes:
@@ -47,9 +41,6 @@ services:
 
   redis:
     image: app_redis:latest
-    build:
-      context: .
-      dockerfile: app_redis.Dockerfile
     restart: unless-stopped
     container_name: redis
     volumes:
@@ -61,9 +52,6 @@ services:
 
   postgres:
     image: app_postgres:latest
-    build:
-      context: .
-      dockerfile: app_postgres.Dockerfile
     restart: unless-stopped
     container_name: postgres
     volumes:
