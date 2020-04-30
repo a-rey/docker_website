@@ -22,7 +22,6 @@ _NOTE:_ diagram made with https://draw.io
 
 ## Design Decision Notes & TODO:
 
-- **[TODO]** Move all docker containers to not run as `root` 
 - **[TODO]** Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
 - Django application _caches_ the entire session context in Redis instead of using PostgreSQL for write-though persistent sessions. Session context cache misses are currently only applicable for the Django admin application, and therefore unlikely. To enable persistent sessions, uncomment `'django.contrib.sessions'` in `INSTALLED_APPS` for `django/settings/common.py` and change `SESSION_ENGINE` to `django.contrib.sessions.backends.cached_db`. 
   - See: https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions
@@ -126,6 +125,7 @@ exit                                      # exit virtual environment
       exit                                      # exit virtual environment
       ```
   - **PRODUCTION:** 
+    
     ```sql
     TODO
     ```
@@ -135,11 +135,10 @@ exit                                      # exit virtual environment
 - Build application images:
   ```bash
   sudo systemctl stop web                                                  # stop apps
-  sudo docker rmi $(sudo docker images -aq)                                # delete apps
-  sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild app
-  sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild app
-  sudo docker build --tag app_postgres -f docker/app_postgres.Dockerfile . # rebuild app
   sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild app
+  sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild app
+  sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild app
+  sudo docker build --tag app_postgres -f docker/app_postgres.Dockerfile . # rebuild app
   ```
 - Install docker-compose `web` service:
   - Create a `/etc/systemd/system/web.service` file with the following content:
@@ -168,8 +167,6 @@ exit                                      # exit virtual environment
   ```bash
   # test bring up all the services
   sudo docker-compose -f docker/docker-compose.yml up -d
-  # spawn a bash shell in a running container
-  sudo docker exec -it <container_name> /bin/bash
   # stop all running services
   sudo docker-compose -f docker/docker-compose.yml down
   # delete all docker volumes
@@ -180,16 +177,22 @@ exit                                      # exit virtual environment
   sudo docker rm $(sudo docker ps -aq)
   # delete all docker images
   sudo docker rmi $(sudo docker images -aq)
+  # spawn a bash shell in a running container
+  sudo docker exec -it <container_name> /bin/bash
   # create a standalone container with bash as entrypoint
   sudo docker run -it --entrypoint /bin/bash <image_name> -s
   ```
+
+- Resources for managing Google Domain through Dynamic DNS in pfsense:
+  - https://support.google.com/domains/answer/6147083?hl=en
+  - https://linuxincluded.com/dynamic-dns-with-google-domains/
+  - https://ttlequals0.com/2015/03/24/google-domains-dynamic-dns-on-pfsense/
 
 ## Application Secrets:
 
 - `geoip.key`: Contains MaxMind account license key for GeoIPLite2 database offline downloads
 - `app.env`: Django Docker application container environmental variables
   - [`DJANGO_SETTINGS_MODULE`](https://docs.djangoproject.com/en/dev/topics/settings/#envvar-DJANGO_SETTINGS_MODULE)
-  - [`GUNICORN_ARGS`](https://docs.gunicorn.org/en/latest/settings.html#settings)
   - [`DJANGO_DEBUG`](https://docs.djangoproject.com/en/dev/ref/settings/#debug)
   - [`DJANGO_SECRET_KEY`](https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY):
     
@@ -219,4 +222,7 @@ exit                                      # exit virtual environment
 - [Nginx Admin Handbook](https://github.com/trimstray/nginx-admins-handbook)
 - [Redis Configuration](https://redis.io/topics/config)
 - [Redis Security](https://redis.io/topics/security)
+- [Gunicorn Arguments](https://docs.gunicorn.org/en/latest/settings.html#settings)
+- [Google Domains Dynamic DNS with pfsense](https://linuxincluded.com/dynamic-dns-with-google-domains/)
+- 
 

@@ -11,12 +11,14 @@ services:
     container_name: nginx
     volumes:
       - django_staticfiles:/__staticfiles:ro
+      - nginx_sslcerts:/etc/letsencrypt:rw
     env_file:
       - ../secrets/nginx.env
     depends_on:
       - django
     ports:
-      - 80:8000
+      - 80:8080
+      - 443:4443
     networks:
       - app_frontend_network
 
@@ -82,5 +84,7 @@ volumes:
   redis_data:
 
   postgres_data:
+
+  nginx_sslcerts:
 
   django_staticfiles:

@@ -21,13 +21,16 @@ TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
 ########## SESSION CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 ########## END SESSION CONFIGURATION
 
 
 ########## HOST CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['www.arey.dev']
+ALLOWED_HOSTS = ['arey.dev']
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#use-x-forwarded-host
+USE_X_FORWARDED_HOST = True
 ########## END HOST CONFIGURATION
 
 
