@@ -38,7 +38,7 @@ EOL
     -d ${CERT_DOMAIN}
   # wait until temporary nginx master process exits
   nginx -c /tmp/temp.conf -s quit
-  wait $(cat /tmp/nginx.pid)
+  tail --pid=$(cat /tmp/nginx.pid) -f /dev/null
   # cleanup
   rm -f /tmp/temp.conf /tmp/nginx.pid
 fi
@@ -60,3 +60,4 @@ done &
 
 echo "[nginx][app-entrypoint.sh] starting nginx server ..."
 nginx
+
