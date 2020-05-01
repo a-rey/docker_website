@@ -13,18 +13,16 @@ COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 RUN \
     # update system packages
        apt-get update \
-    # install certbot (https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx)
-    && apt-get install -y --no-install-recommends \
-          sudo \
-          software-properties-common \
-    && add-apt-repository universe \
-    && add-apt-repository ppa:certbot/certbot \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-          certbot python3-certbot-nginx \
+    # install certbot (https://certbot.eff.org/lets-encrypt/debianbuster-nginx)
+    && apt-get install -y --no-install-recommends\
+          certbot \
+          python-certbot-nginx \
     # make expected static file volume mounts and nginx files
-    && mkdir -p /{__certbot,__staticfiles} \
-    && touch /var/run/nginx.pid \
+    && mkdir -p /__certbot \
+    && mkdir -p /__staticfiles \
+    && mkdir -p /var/lib/letsencrypt \
+    && mkdir -p /var/log/letsencrypt \
+    && mkdir -p /etc/letsencrypt \
     # make entry executable
     && chmod +x /app-entrypoint.sh \
     # create image user
@@ -34,11 +32,17 @@ RUN \
     && chown -R ${USER_GID}:${USER_GID} /__certbot \
     && chown -R ${USER_GID}:${USER_GID} /__staticfiles \
     && chown -R ${USER_GID}:${USER_GID} /var/cache/nginx \
+    && chown -R ${USER_GID}:${USER_GID} /var/log/nginx \
     && chown -R ${USER_GID}:${USER_GID} /etc/nginx/ \
-    && chown -R ${USER_GID}:${USER_GID} /var/run/nginx.pid
+    && chown -R ${USER_GID}:${USER_GID} /var/lib/letsencrypt \
+    && chown -R ${USER_GID}:${USER_GID} /var/log/letsencrypt \
+    && chown -R ${USER_GID}:${USER_GID} /etc/letsencrypt
+
 
 # define application volume for Django and letsEncrypt certbot files
 VOLUME ["/__staticfiles","/etc/letsencrypt/"]
 
-# !!! start entrypoint as root
+USER app_nginx
+
 ENTRYPOINT ["/app-entrypoint.sh"]
+
