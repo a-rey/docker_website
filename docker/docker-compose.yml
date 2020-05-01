@@ -108,4 +108,3 @@ volumes:
   nginx_letsencrypt:
 
   django_staticfiles:
-

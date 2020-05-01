@@ -45,4 +45,3 @@ VOLUME ["/__staticfiles","/etc/letsencrypt/"]
 USER app_nginx
 
 ENTRYPOINT ["/app-entrypoint.sh"]
-
