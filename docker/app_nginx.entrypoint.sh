@@ -10,7 +10,6 @@ if [[ ! -f /etc/letsencrypt/live/${CERT_DOMAIN}/fullchain.pem && ! -f /etc/letse
   cat > /tmp/temp.conf << EOL
 pid /tmp/nginx.pid;
 events {
-  worker_connections 512;
 }
 http {
   server {

@@ -2,6 +2,10 @@
 
 A dockerized django server that I use in personal projects as a backend.
 
+## TODO:
+
+- Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
+
 ## Architecture Notes:
 
 _NOTE:_ diagram made with https://draw.io
@@ -13,7 +17,7 @@ _NOTE:_ diagram made with https://draw.io
   - Provides HTTPS support through [Let's Encrypt](https://letsencrypt.org/) for free
   - Serves Django application static files (no need for [WhiteNoise](http://whitenoise.evans.io/en/stable/))
 - [Gunicorn](https://gunicorn.org/)
-  - Python [WSGI](https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface) HTTP Server for UNIX
+  - Python [WSGI](https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface)-to-HTTP Server for UNIX
   - Manages Django application thread pool
 - [PostgreSQL](https://www.postgresql.org/)
   - SQL compliant database with Django community support
@@ -22,16 +26,16 @@ _NOTE:_ diagram made with https://draw.io
 
 ## Design Decision Notes & TODO:
 
-- **[TODO]** Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
 - Django application _caches_ the entire session context in Redis instead of using PostgreSQL for write-though persistent sessions. Session context cache misses are currently only applicable for the Django admin application, and therefore unlikely. To enable persistent sessions, uncomment `'django.contrib.sessions'` in `INSTALLED_APPS` for `django/settings/common.py` and change `SESSION_ENGINE` to `django.contrib.sessions.backends.cached_db`. 
   - See: https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions
-- Docker production design splits the internal Docker network into a fontend (Nginx) and backend (PostgreSQL & Redis) with the Django `app` container serving as the link between the two for better container isolation.
+- Docker production design splits the internal Docker network into a fontend (Nginx) and backend (PostgreSQL & Redis) with the Django container serving as the link between the two for better Docker container isolation.
 - Redis is configured to _not_ perform database snapshotting since a cache miss will not cause any current Django application logic issues:
   - See: https://redis.io/topics/persistence
-- All sensitive production configuration files are stored in a directory called `secrets` which is not tracked by Git. 
+- All _sensitive_ production configuration files are stored in a directory called `secrets` which is not tracked by Git. 
   - See: `Application Secrets` README section below for more information
+- All production Docker containers are running as non-`root` users. Only the Nginx and Django containers must share the same user/group ID in order to share a Docker volume containing Django's static files to be served by Nginx.
 
-## Host Setup:
+## Host Setup Notes:
 
 - [Ubuntu 18.04 LTS amd64 ISO download](https://ubuntu.com/download/server/thank-you?version=18.04.4&architecture=amd64)
 - [Docker CE Install](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
@@ -135,11 +139,13 @@ exit                                      # exit virtual environment
 - Build application images:
   ```bash
   sudo systemctl stop web                                                  # stop apps
+  sudo docker rmi $(sudo docker images -aq)                                # remove apps
   sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild app
   sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild app
   sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild app
   sudo docker build --tag app_postgres -f docker/app_postgres.Dockerfile . # rebuild app
   ```
+  
 - Install docker-compose `web` service:
   - Create a `/etc/systemd/system/web.service` file with the following content:
     - **NOTE:** replace `<path to docker-compose.yml>` below with host system's path
@@ -163,27 +169,31 @@ exit                                      # exit virtual environment
     ```bash
     sudo systemctl enable web
     ```
-- Helpful debugging commands:
+  
+- **TODO** how to manage letsencrypt notes
+  
+- Helpful production debugging commands:
+  
   ```bash
   # test bring up all the services
   sudo docker-compose -f docker/docker-compose.yml up -d
   # stop all running services
   sudo docker-compose -f docker/docker-compose.yml down
-  # delete all docker volumes
-  sudo docker volume rm $(sudo docker volume ls -q)
   # stop all running containers
   sudo docker stop $(sudo docker ps -aq)
   # delete all containers
   sudo docker rm $(sudo docker ps -aq)
+  # delete all docker volumes
+  sudo docker volume rm $(sudo docker volume ls -q)
   # delete all docker images
   sudo docker rmi $(sudo docker images -aq)
   # spawn a bash shell in a running container
   sudo docker exec -it <container_name> /bin/bash
-  # create a standalone container with bash as entrypoint
+  # create a standalone container from image with bash as entrypoint
   sudo docker run -it --entrypoint /bin/bash <image_name> -s
   ```
 
-- Resources for managing Google Domain through Dynamic DNS in pfsense:
+- Resources for managing a Google Domain through Dynamic DNS in pfsense:
   - https://support.google.com/domains/answer/6147083?hl=en
   - https://linuxincluded.com/dynamic-dns-with-google-domains/
   - https://ttlequals0.com/2015/03/24/google-domains-dynamic-dns-on-pfsense/
@@ -207,6 +217,7 @@ exit                                      # exit virtual environment
   - [`POSTGRES_USER`](https://hub.docker.com/_/postgres/)
   - [`POSTGRES_PASSWORD`](https://hub.docker.com/_/postgres/)
 - `redis.env`: Redis environmental variables for [`django-redis`](https://github.com/jazzband/django-redis) Django plugin in the Django Docker container
+  
   - [`REDIS_DB`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_TTL`](https://docs.djangoproject.com/en/dev/ref/settings/#timeout)
   - [`REDIS_PORT`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
@@ -216,13 +227,16 @@ exit                                      # exit virtual environment
 - `redis.password.conf`: Redis default user password using `requirepass` config option.
     
     - **NOTE**: password must match the `REDIS_PASS` value in `redis.env`
+    
+- **TODO** `nginx.env`
 
 ## Resources:
 
 - [Nginx Admin Handbook](https://github.com/trimstray/nginx-admins-handbook)
-- [Redis Configuration](https://redis.io/topics/config)
-- [Redis Security](https://redis.io/topics/security)
-- [Gunicorn Arguments](https://docs.gunicorn.org/en/latest/settings.html#settings)
-- [Google Domains Dynamic DNS with pfsense](https://linuxincluded.com/dynamic-dns-with-google-domains/)
-- 
+- [Redis Server Configuration](https://redis.io/topics/config)
+- [Redis Server Security](https://redis.io/topics/security)
+- [Gunicorn Command Line Arguments](https://docs.gunicorn.org/en/latest/settings.html#settings)
+- [Docker `run` Comand Line Reference](https://docs.docker.com/engine/reference/commandline/run/)
+- [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
+- [Docker Compose Reference](https://docs.docker.com/compose/compose-file/)
 
