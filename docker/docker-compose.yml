@@ -12,8 +12,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 4
-        max-size: 256m
+        max-file: "4"
+        max-size: "256m"
     volumes:
       - django_staticfiles:/__staticfiles:ro
       - nginx_letsencrypt:/etc/letsencrypt:rw
@@ -34,8 +34,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 4
-        max-size: 256m
+        max-file: "4"
+        max-size: "256m"
     volumes:
       - django_staticfiles:/app/__staticfiles:rw
     env_file:
@@ -53,11 +53,11 @@ services:
     image: app_redis:latest
     restart: unless-stopped
     container_name: redis
-    logging:
+    llogging:
       driver: "json-file"
       options:
-        max-file: 4
-        max-size: 256m
+        max-file: "4"
+        max-size: "256m"
     volumes:
       - redis_data:/data:rw
     env_file:
@@ -74,8 +74,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 4
-        max-size: 256m
+        max-file: "4"
+        max-size: "256m"
     volumes:
       - postgres_data:/var/lib/postgresql/data:rw
     env_file:
