@@ -53,7 +53,7 @@ services:
     image: app_redis:latest
     restart: unless-stopped
     container_name: redis
-    llogging:
+    logging:
       driver: "json-file"
       options:
         max-file: "4"
