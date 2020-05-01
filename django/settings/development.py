@@ -27,6 +27,12 @@ SESSION_COOKIE_SECURE = False
 ########## END SESSION CONFIGURATION
 
 
+########## CSRF CONFIGURATION
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
+CSRF_COOKIE_SECURE = False
+########## END CSRF CONFIGURATION
+
+
 ########## HOST CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['*']

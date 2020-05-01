@@ -8,7 +8,6 @@ from settings.common import *
 ########## SECURITY CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-# TODO: https://docs.djangoproject.com/en/dev/ref/middleware/#http-strict-transport-security
 ########## END SECURITY CONFIGURATION
 
 
@@ -32,6 +31,21 @@ ALLOWED_HOSTS = ['arey.dev']
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-x-forwarded-host
 USE_X_FORWARDED_HOST = True
 ########## END HOST CONFIGURATION
+
+
+########## SECURITY CONFIGURATION
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-ssl-redirect
+SECURE_SSL_REDIRECT = True
+########## END SECURITY CONFIGURATION
+
+
+########## CSRF CONFIGURATION
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
+CSRF_COOKIE_SECURE = True
+########## END CSRF CONFIGURATION
 
 
 ########## STATIC FILES CONFIGURATION

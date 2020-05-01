@@ -9,9 +9,14 @@ services:
     image: app_nginx:latest
     restart: unless-stopped
     container_name: nginx
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 4
+        max-size: 256m
     volumes:
       - django_staticfiles:/__staticfiles:ro
-      - nginx_sslcerts:/etc/letsencrypt:rw
+      - nginx_letsencrypt:/etc/letsencrypt:rw
     env_file:
       - ../secrets/nginx.env
     depends_on:
@@ -26,6 +31,11 @@ services:
     image: app_django:latest
     restart: unless-stopped
     container_name: django
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 4
+        max-size: 256m
     volumes:
       - django_staticfiles:/app/__staticfiles:rw
     env_file:
@@ -35,8 +45,6 @@ services:
     depends_on:
       - postgres
       - redis
-    ports:
-      - 127.0.0.1:8000:8000
     networks:
       - app_frontend_network
       - app_backend_network
@@ -45,6 +53,11 @@ services:
     image: app_redis:latest
     restart: unless-stopped
     container_name: redis
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 4
+        max-size: 256m
     volumes:
       - redis_data:/data:rw
     env_file:
@@ -58,6 +71,11 @@ services:
     image: app_postgres:latest
     restart: unless-stopped
     container_name: postgres
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 4
+        max-size: 256m
     volumes:
       - postgres_data:/var/lib/postgresql/data:rw
     env_file:
@@ -87,6 +105,6 @@ volumes:
 
   postgres_data:
 
-  nginx_sslcerts:
+  nginx_letsencrypt:
 
   django_staticfiles:
