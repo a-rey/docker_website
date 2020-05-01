@@ -28,7 +28,7 @@ EOL
   nginx -c /tmp/temp.conf
   echo "[nginx][app-entrypoint.sh] !!! requesting **new** TLS certificates for ${CERT_DOMAIN} ..."
   certbot certonly --webroot \
-    ${CERT_TEST_FLAGS} \
+    ${CERT_CREATE_FLAGS} \
     --webroot-path /__certbot \
     --email ${CERT_EMAIL} \
     --rsa-key-size ${CERT_RSA_KEY_SIZE} \
@@ -45,7 +45,7 @@ do
   echo "[nginx][app-entrypoint.sh] waiting ${CERT_RENEW_DELAY} until certificate renewal ..."
   sleep ${CERT_RENEW_DELAY} & wait $!;
   echo "[nginx][app-entrypoint.sh] !!! renewing ${CERT_DOMAIN} ..."
-  certbot ${CERT_TEST_FLAGS} renew --cert-name ${CERT_DOMAIN};
+  certbot ${CERT_RENEW_FLAGS} renew --cert-name ${CERT_DOMAIN};
   echo "[nginx][app-entrypoint.sh] reloading nginx configuration ..."
   nginx -s reload;
 done &
