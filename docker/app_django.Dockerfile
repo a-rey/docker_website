@@ -17,10 +17,13 @@ COPY ./django /app
 RUN \
     # update system packages
        apt-get update \
-    # install python package build dependencies
+    # install image dependencies:
+    # - libpq-dev & build-essential are for psycopg2 (Python postgresql)
+    # - postgresql-client is for the psql utility to connect to postgreSQL DB
     && apt-get install -y --no-install-recommends \
           libpq-dev \
           build-essential \
+          postgresql-client \
     # install application Python dependencies
     && python3.7 -m pip install --upgrade pip \
     && python3.7 -m pip install --no-cache-dir pipenv \
