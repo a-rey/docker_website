@@ -15,6 +15,7 @@ RUN \
        apt-get update \
     # install certbot (https://certbot.eff.org/lets-encrypt/debianbuster-nginx)
     && apt-get install -y --no-install-recommends\
+          curl \
           certbot \
           python-certbot-nginx \
     # make expected static file volume mounts and nginx files
@@ -23,6 +24,8 @@ RUN \
     && mkdir -p /var/lib/letsencrypt \
     && mkdir -p /var/log/letsencrypt \
     && mkdir -p /etc/letsencrypt \
+    # download RFC7919 TLS DH parameters (https://tools.ietf.org/html/rfc7919#appendix-A)
+    && curl https://ssl-config.mozilla.org/ffdhe2048.txt > /etc/nginx/ffdhe2048.pem \
     # make entry executable
     && chmod +x /app-entrypoint.sh \
     # create image user
@@ -36,7 +39,16 @@ RUN \
     && chown -R ${USER_GID}:${USER_GID} /etc/nginx/ \
     && chown -R ${USER_GID}:${USER_GID} /var/lib/letsencrypt \
     && chown -R ${USER_GID}:${USER_GID} /var/log/letsencrypt \
-    && chown -R ${USER_GID}:${USER_GID} /etc/letsencrypt
+    && chown -R ${USER_GID}:${USER_GID} /etc/letsencrypt \
+    # layer cleanup
+    && apt-get purge -y --auto-remove \
+          curl \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf \
+          /tmp/* \
+          /var/tmp/* \
+          /var/lib/apt/lists/*
 
 
 # define application volume for Django and letsEncrypt certbot files

@@ -2,6 +2,7 @@
 
 trap exit TERM;
 echo "[nginx][app-entrypoint.sh] user: $(id)"
+echo "[nginx][app-entrypoint.sh] $(openssl version)"
 
 # check if a **new** TLS cert needs to be generated
 if [[ ! -f /etc/letsencrypt/live/${CERT_DOMAIN}/fullchain.pem && ! -f /etc/letsencrypt/live/${CERT_DOMAIN}/privkey.pem ]]; then

@@ -5,6 +5,7 @@ A dockerized django server that I use in personal projects as a backend.
 ## TODO:
 
 - Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
+- Document how to manage letsencrypt certs
 
 ## Architecture Notes:
 
@@ -41,6 +42,7 @@ _NOTE:_ diagram made with https://draw.io
 - [Docker CE Install](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 - [Docker Compose Install](https://docs.docker.com/compose/install/)
 - Install Python3.7 and [pipenv](https://pipenv.pypa.io/en/latest/):
+
   ```bash
   sudo apt-get update
   sudo apt-get upgrade
@@ -49,7 +51,9 @@ _NOTE:_ diagram made with https://draw.io
   echo 'export PATH="${HOME}/.local/bin:$PATH"' >> ~/.bashrc
   source ~/.bashrc
   ```
+  
 - Install Django application dependencies:
+
   ```bash
   sudo apt-get install -y \
     libpq-dev \
@@ -59,7 +63,9 @@ _NOTE:_ diagram made with https://draw.io
   cd django
   pipenv install --dev
   ```
+  
 - Remove Ubuntu snapd:
+
   ```bash
   sudo apt autoremove --purge snapd gnome-software-plugin-snap
   sudo rm -rf /var/cache/snapd/
@@ -98,36 +104,44 @@ exit                                      # exit virtual environment
   - Copy permalinks for needed CSV formatted database files 
   - Update the `URLS` variable in `django/app_whoami/fixtures/update.py` as needed
 - Updating django JSON fixture file `app_whoami.json`:
+
   ```bash
   cd django                                 # enter project directory
   pipenv shell                              # start virtualenv shell
   cd app_whoami/fixtures                    # enter fixtures directory
   ./update.py -k ../../../secrets/geoip.key # generate new JSON fixture
   ```
+  
 - Loading Django JSON fixture `app_whoami.json` into DB:
   - **DEVELOPMENT:**
-    
     - Connect to the DB:
+
       ```bash
       cd django                # enter project directory
       pipenv shell             # start virtualenv shell
       python manage.py dbshell # start a DB SQL shell
       ```
+      
     - _-- If Django DB schema has **not** changed --_ remove old table data:
+
       ```mysql
       SELECT name FROM sqlite_master 
           WHERE name LIKE '%whoami%'; -- get tables
       DELETE FROM <table_name>;       -- drop table data
       .exit                           -- exit db connection
       ```
+      
     - _-- If Django DB schema **has** changed --_ delete tables:
+
       ```mysql
       SELECT name FROM sqlite_master 
           WHERE name LIKE '%whoami%'; -- get tables
       DROP TABLE <table_name>;        -- drop table
       .exit                           -- exit db connection
       ```
+      
     - Import the new fixtures:
+
       ```bash
       python manage.py migrate                  # re-create any broken tables
       python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
@@ -135,9 +149,7 @@ exit                                      # exit virtual environment
       ```
     
   - **PRODUCTION:** 
-
     - **NOTE**: `app_whoami.json` must be generated _and_ packaged into the `django` container for this to work. If not, rebuild the `app_django` Docker image with a newly generated `app_whoami.json` fixture file _before_ continuing.
-
     - Connect to the DB:
 
       ```bash
@@ -146,7 +158,7 @@ exit                                      # exit virtual environment
       cd /app                               # navigate to project directory
       python manage.py dbshell              # start a DB SQL shell
       ```
-
+      
     - _-- If Django DB schema has **not** changed --_ remove old table data:
 
       ```mysql
@@ -176,6 +188,7 @@ exit                                      # exit virtual environment
 ## Production Notes:
 
 - Build application images:
+
   ```bash
   sudo systemctl stop web                                                  # stop apps
   sudo docker rmi $(sudo docker images -aq)                                # remove apps
@@ -188,6 +201,7 @@ exit                                      # exit virtual environment
 - Install docker-compose `web` service:
   - Create a `/etc/systemd/system/web.service` file with the following content:
     - **NOTE:** replace `<path to docker-compose.yml>` below with host system's path
+
     ```bash
     [Unit]
     Description=Docker Compose App Service
@@ -204,13 +218,13 @@ exit                                      # exit virtual environment
     [Install]
     WantedBy=multi-user.target
     ```
+    
   - Install the service:
+
     ```bash
     sudo systemctl enable web
     ```
-  
-- **TODO** how to manage letsencrypt certs
-  
+
 - Connecting to PostgreSQL DB:
   
   ```bash
@@ -251,6 +265,13 @@ exit                                      # exit virtual environment
   - https://support.google.com/domains/answer/6147083?hl=en
   - https://linuxincluded.com/dynamic-dns-with-google-domains/
   - https://ttlequals0.com/2015/03/24/google-domains-dynamic-dns-on-pfsense/
+  
+- Securing Nginx resources:
+
+  - https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
+  - https://wiki.mozilla.org/Security/Server_Side_TLS
+  - https://github.com/trimstray/nginx-admins-handbook/blob/master/doc/RULES.md
+  - https://ssl-config.mozilla.org/
 
 ## Application Secrets:
 
@@ -258,9 +279,7 @@ exit                                      # exit virtual environment
 
 - `app.env`: Django Docker application container environmental variables
   - [`DJANGO_SETTINGS_MODULE`](https://docs.djangoproject.com/en/dev/topics/settings/#envvar-DJANGO_SETTINGS_MODULE)
-  
   - [`DJANGO_DEBUG`](https://docs.djangoproject.com/en/dev/ref/settings/#debug)
-  
   - [`DJANGO_SECRET_KEY`](https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY):
     
     ```python
@@ -276,7 +295,6 @@ exit                                      # exit virtual environment
   - [`POSTGRES_PASSWORD`](https://hub.docker.com/_/postgres/)
   
 - `redis.env`: Redis environmental variables for [`django-redis`](https://github.com/jazzband/django-redis) Django plugin in the Django Docker container
-  
   - [`REDIS_DB`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_TTL`](https://docs.djangoproject.com/en/dev/ref/settings/#timeout)
   - [`REDIS_PORT`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
@@ -289,7 +307,6 @@ exit                                      # exit virtual environment
     - **NOTE**: password must match the `REDIS_PASS` value in `redis.env`
     
 - `nginx.env`: Nginx environmental variables to manage LetsEncrypt `certbot` tool for TLS certifications
-
     - [`CERT_DOMAIN`](https://certbot.eff.org/docs/using.html#webroot)
     - [`CERT_RENEW_DELAY`](https://letsencrypt.org/docs/faq/#what-is-the-lifetime-for-let-s-encrypt-certificates-for-how-long-are-they-valid)
     - [`CERT_RSA_KEY_SIZE`](https://certbot.eff.org/docs/using.html#certbot-command-line-options)
@@ -297,9 +314,8 @@ exit                                      # exit virtual environment
     - [`CERT_CREATE_FLAGS`](https://certbot.eff.org/docs/using.html#certbot-command-line-options): Used for `certbot certonly` command
     - [`CERT_RENEW_FLAGS`](https://certbot.eff.org/docs/using.html#certbot-command-line-options): Used for `certbot renew` command
 
-## Resources:
+## Application Resources:
 
-- [Nginx Admin Handbook](https://github.com/trimstray/nginx-admins-handbook)
 - [Redis Server Configuration](https://redis.io/topics/config)
 - [Redis Server Security](https://redis.io/topics/security)
 - [Gunicorn Command Line Arguments](https://docs.gunicorn.org/en/latest/settings.html#settings)
