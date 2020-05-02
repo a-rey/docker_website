@@ -24,7 +24,7 @@ _NOTE:_ diagram made with https://draw.io
 - [Redis](https://redis.io/)
   - PostgreSQL request caching through Django for UNIX
 
-## Design Decision Notes & TODO:
+## Design Decision Notes:
 
 - Django application _caches_ the entire session context in Redis instead of using PostgreSQL for write-though persistent sessions. Session context cache misses are currently only applicable for the Django admin application, and therefore unlikely. To enable persistent sessions, uncomment `'django.contrib.sessions'` in `INSTALLED_APPS` for `django/settings/common.py` and change `SESSION_ENGINE` to `django.contrib.sessions.backends.cached_db`. 
   - See: https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions
@@ -42,7 +42,8 @@ _NOTE:_ diagram made with https://draw.io
 - [Docker Compose Install](https://docs.docker.com/compose/install/)
 - Install Python3.7 and [pipenv](https://pipenv.pypa.io/en/latest/):
   ```bash
-  sudo apt-get update && sudo apt-get upgrade
+  sudo apt-get update
+  sudo apt-get upgrade
   sudo apt-get install -y python3.7 python3-pip
   python3.7 -m pip install --user pipenv
   echo 'export PATH="${HOME}/.local/bin:$PATH"' >> ~/.bashrc
@@ -55,7 +56,8 @@ _NOTE:_ diagram made with https://draw.io
     python3.7-dev \
     build-essential \
     python3-setuptools # psycopg2 (Python postgresql) dependencies 
-  cd django && pipenv install --dev
+  cd django
+  pipenv install --dev
   ```
 - Remove Ubuntu snapd:
   ```bash
@@ -104,6 +106,7 @@ exit                                      # exit virtual environment
   ```
 - Loading Django JSON fixture `app_whoami.json` into DB:
   - **DEVELOPMENT:**
+    
     - Connect to the DB:
       ```bash
       cd django                # enter project directory
@@ -112,15 +115,17 @@ exit                                      # exit virtual environment
       ```
     - _-- If Django DB schema has **not** changed --_ remove old table data:
       ```mysql
-      SELECT name FROM sqlite_master WHERE name LIKE '%whoami%'; -- get app tables
-      DELETE FROM <table_name>;                                  -- drop table data
-      .exit                                                      -- exit db connection
+      SELECT name FROM sqlite_master 
+          WHERE name LIKE '%whoami%'; -- get tables
+      DELETE FROM <table_name>;       -- drop table data
+      .exit                           -- exit db connection
       ```
     - _-- If Django DB schema **has** changed --_ delete tables:
       ```mysql
-      SELECT name FROM sqlite_master WHERE name LIKE '%whoami%'; -- get app tables
-      DROP TABLE <table_name>;                                   -- drop table
-      .exit                                                      -- exit db connection
+      SELECT name FROM sqlite_master 
+          WHERE name LIKE '%whoami%'; -- get tables
+      DROP TABLE <table_name>;        -- drop table
+      .exit                           -- exit db connection
       ```
     - Import the new fixtures:
       ```bash
@@ -128,11 +133,45 @@ exit                                      # exit virtual environment
       python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
       exit                                      # exit virtual environment
       ```
-  - **PRODUCTION:** 
     
-    ```sql
-    TODO
-    ```
+  - **PRODUCTION:** 
+
+    - **NOTE**: `app_whoami.json` must be generated _and_ packaged into the `django` container for this to work. If not, rebuild the `app_django` Docker image with a newly generated `app_whoami.json` fixture file _before_ continuing.
+
+    - Connect to the DB:
+
+      ```bash
+      sudo systemctl start web              # make sure django app is running
+      sudo docker exec -it django /bin/bash # get a bash shell in django container
+      cd /app                               # navigate to project directory
+      python manage.py dbshell              # start a DB SQL shell
+      ```
+
+    - _-- If Django DB schema has **not** changed --_ remove old table data:
+
+      ```mysql
+      SELECT tablename FROM pg_catalog.pg_tables 
+          WHERE tablename LIKE '%whoami%';       -- get tables
+      DELETE FROM <table_name>;                  -- drop table data
+      \q                                         -- exit db connection
+      ```
+
+    - _-- If Django DB schema **has** changed --_ delete tables:
+
+      ```mysql
+      SELECT tablename FROM pg_catalog.pg_tables 
+          WHERE tablename LIKE '%whoami%';       -- get tables
+      DROP TABLE <table_name>;                   -- drop table data
+      \q                                         -- exit db connection
+      ```
+
+    - Import the new fixtures:
+
+      ```bash
+      python manage.py migrate                  # re-create any broken tables
+      python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
+      exit                                      # exit container shell
+      ```
 
 ## Production Notes:
 
@@ -140,10 +179,10 @@ exit                                      # exit virtual environment
   ```bash
   sudo systemctl stop web                                                  # stop apps
   sudo docker rmi $(sudo docker images -aq)                                # remove apps
-  sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild app
-  sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild app
-  sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild app
-  sudo docker build --tag app_postgres -f docker/app_postgres.Dockerfile . # rebuild app
+  sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild nginx
+  sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild redis
+  sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild django
+  sudo docker build --tag app_postgres -f docker/app_postgres.Dockerfile . # rebuild db
   ```
   
 - Install docker-compose `web` service:
@@ -158,8 +197,8 @@ exit                                      # exit virtual environment
     [Service]
     Type=oneshot
     RemainAfterExit=yes
-    ExecStart=/usr/local/bin/docker-compose -f <path to docker-compose.yml> up -d
-    ExecStop=/usr/local/bin/docker-compose -f <path to docker-compose.yml> down
+    ExecStart=/usr/local/bin/docker-compose -f <path to docker/docker-compose.yml> up -d
+    ExecStop=/usr/local/bin/docker-compose -f <path to docker/docker-compose.yml> down
     TimeoutStartSec=0
     
     [Install]
@@ -170,7 +209,22 @@ exit                                      # exit virtual environment
     sudo systemctl enable web
     ```
   
-- **TODO** how to manage letsencrypt notes
+- **TODO** how to manage letsencrypt certs
+  
+- Connecting to PostgreSQL DB:
+  
+  ```bash
+  sudo docker exec -it django /bin/bash # get a bash shell in django container
+  cd /app                               # navigate to project directory
+  python manage.py dbshell              # start a DB shell
+  ```
+  
+- Connecting to Redis DB:
+  
+  ```bash
+  sudo docker exec -it redis /bin/bash # get a bash shell in redis container
+  redis-cli --pass $REDIS_PASS         # start a DB shell
+  ```
   
 - Helpful production debugging commands:
   
@@ -201,21 +255,26 @@ exit                                      # exit virtual environment
 ## Application Secrets:
 
 - `geoip.key`: Contains MaxMind account license key for GeoIPLite2 database offline downloads
+
 - `app.env`: Django Docker application container environmental variables
   - [`DJANGO_SETTINGS_MODULE`](https://docs.djangoproject.com/en/dev/topics/settings/#envvar-DJANGO_SETTINGS_MODULE)
+  
   - [`DJANGO_DEBUG`](https://docs.djangoproject.com/en/dev/ref/settings/#debug)
+  
   - [`DJANGO_SECRET_KEY`](https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY):
     
     ```python
     import django.core.management.utils
     django.core.management.utils.get_random_secret_key()
     ```
+  
 - `postgres.env`: PostgreSQL Docker container environmental variables
   - [`POSTGRES_PORT`](https://docs.djangoproject.com/en/dev/ref/settings/#databases)
   - [`POSTGRES_HOST`](https://docs.djangoproject.com/en/dev/ref/settings/#databases)
   - [`POSTGRES_DB`](https://hub.docker.com/_/postgres/)
   - [`POSTGRES_USER`](https://hub.docker.com/_/postgres/)
   - [`POSTGRES_PASSWORD`](https://hub.docker.com/_/postgres/)
+  
 - `redis.env`: Redis environmental variables for [`django-redis`](https://github.com/jazzband/django-redis) Django plugin in the Django Docker container
   
   - [`REDIS_DB`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
@@ -224,11 +283,19 @@ exit                                      # exit virtual environment
   - [`REDIS_HOST`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_CONNECTION_TYPE`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   - [`REDIS_PASS`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
+  
 - `redis.password.conf`: Redis default user password using `requirepass` config option.
     
     - **NOTE**: password must match the `REDIS_PASS` value in `redis.env`
     
-- **TODO** `nginx.env`
+- `nginx.env`: Nginx environmental variables to manage LetsEncrypt `certbot` tool for TLS certifications
+
+    - [`CERT_DOMAIN`](https://certbot.eff.org/docs/using.html#webroot)
+    - [`CERT_RENEW_DELAY`](https://letsencrypt.org/docs/faq/#what-is-the-lifetime-for-let-s-encrypt-certificates-for-how-long-are-they-valid)
+    - [`CERT_RSA_KEY_SIZE`](https://certbot.eff.org/docs/using.html#certbot-command-line-options)
+    - [`CERT_EMAIL`](https://certbot.eff.org/docs/using.html#certbot-command-line-options)
+    - [`CERT_CREATE_FLAGS`](https://certbot.eff.org/docs/using.html#certbot-command-line-options): Used for `certbot certonly` command
+    - [`CERT_RENEW_FLAGS`](https://certbot.eff.org/docs/using.html#certbot-command-line-options): Used for `certbot renew` command
 
 ## Resources:
 
@@ -239,4 +306,5 @@ exit                                      # exit virtual environment
 - [Docker `run` Comand Line Reference](https://docs.docker.com/engine/reference/commandline/run/)
 - [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
 - [Docker Compose Reference](https://docs.docker.com/compose/compose-file/)
+- [LetsEncrypt `certbot` Documentation](https://certbot.eff.org/docs/index.html)
 

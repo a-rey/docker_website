@@ -60,4 +60,3 @@ done &
 
 echo "[nginx][app-entrypoint.sh] starting nginx server ..."
 nginx
-
