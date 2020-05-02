@@ -261,12 +261,12 @@ exit                                      # exit virtual environment
   sudo docker run -it --entrypoint /bin/bash <image_name> -s
   ```
 
-- Resources for managing a Google Domain through Dynamic DNS in pfsense:
+- Google Domains with Dynamic DNS in pfsense:
   - https://support.google.com/domains/answer/6147083?hl=en
   - https://linuxincluded.com/dynamic-dns-with-google-domains/
   - https://ttlequals0.com/2015/03/24/google-domains-dynamic-dns-on-pfsense/
   
-- Securing Nginx resources:
+- Nginx TLS resources:
 
   - https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
   - https://wiki.mozilla.org/Security/Server_Side_TLS
