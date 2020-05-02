@@ -51,7 +51,6 @@ _NOTE:_ diagram made with https://draw.io
   echo 'export PATH="${HOME}/.local/bin:$PATH"' >> ~/.bashrc
   source ~/.bashrc
   ```
-  
 - Install Django application dependencies:
 
   ```bash
@@ -63,7 +62,6 @@ _NOTE:_ diagram made with https://draw.io
   cd django
   pipenv install --dev
   ```
-  
 - Remove Ubuntu snapd:
 
   ```bash
@@ -74,22 +72,22 @@ _NOTE:_ diagram made with https://draw.io
 
 ## Django Application Development Notes:
 
-```bash
-export DJANGO_SETTINGS_MODULE=settings.development # set django settings module
-cd django                                          # enter project directory
-pipenv shell                                       # start virtualenv shell
-rm -rf __dev-*                                     # remove old dev files
-python manage.py collectstatic --no-input          # recollect static files 
-python manage.py migrate                           # setup database schema
-python manage.py runserver 0.0.0.0:8000            # spin up django app
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# MISC development commands
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-python manage.py createsuperuser          # add test admin user to database
-python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
-python manage.py flush                    # drop all data in each DB table
-exit                                      # exit virtual environment
-```
+  ```bash
+  export DJANGO_SETTINGS_MODULE=settings.development # set django settings module
+  cd django                                          # enter project directory
+  pipenv shell                                       # start virtualenv shell
+  rm -rf __dev-*                                     # remove old dev files
+  python manage.py collectstatic --no-input          # recollect static files 
+  python manage.py migrate                           # setup database schema
+  python manage.py runserver 0.0.0.0:8000            # spin up django app
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # MISC development commands
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  python manage.py createsuperuser          # add test admin user to database
+  python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
+  python manage.py flush                    # drop all data in each DB table
+  exit                                      # exit virtual environment
+  ```
 
 ## MaxMind GeoIP Database Management Notes:
 
@@ -199,8 +197,7 @@ exit                                      # exit virtual environment
   ```
   
 - Install docker-compose `web` service:
-  - Create a `/etc/systemd/system/web.service` file with the following content:
-    - **NOTE:** replace `<path to docker-compose.yml>` below with host system's path
+  - Create a `/etc/systemd/system/web.service` file with the following content: (**NOTE:** replace `<path to docker-compose.yml>` below with host system's path):
 
     ```bash
     [Unit]
@@ -303,7 +300,7 @@ exit                                      # exit virtual environment
   - [`REDIS_PASS`](https://jazzband.github.io/django-redis/latest/#_configure_as_cache_backend)
   
 - `redis.password.conf`: Redis default user password using `requirepass` config option.
-    
+  
     - **NOTE**: password must match the `REDIS_PASS` value in `redis.env`
     
 - `nginx.env`: Nginx environmental variables to manage LetsEncrypt `certbot` tool for TLS certifications

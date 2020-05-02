@@ -25,7 +25,8 @@ services:
       - 80:8080
       - 443:4443
     networks:
-      - app_frontend_network
+      app_frontend_network:
+        ipv4_address: 192.168.10.10
 
   django:
     image: app_django:latest
@@ -46,8 +47,10 @@ services:
       - postgres
       - redis
     networks:
-      - app_frontend_network
-      - app_backend_network
+      app_frontend_network:
+        ipv4_address: 192.168.10.11
+      app_backend_network:
+        ipv4_address: 192.168.20.11
 
   redis:
     image: app_redis:latest
@@ -63,7 +66,8 @@ services:
     env_file:
       - ../secrets/redis.env
     networks:
-      - app_backend_network
+      app_backend_network:
+        ipv4_address: 192.168.20.12
 
   postgres:
     image: app_postgres:latest
@@ -79,7 +83,8 @@ services:
     env_file:
       - ../secrets/postgres.env
     networks:
-      - app_backend_network
+      app_backend_network:
+        ipv4_address: 192.168.20.13
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # docker networks:
@@ -88,9 +93,18 @@ networks:
 
   app_frontend_network:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        subnet: 192.168.10.0/24
 
   app_backend_network:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        subnet: 192.168.20.0/24
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # docker volumes:
