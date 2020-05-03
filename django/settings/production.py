@@ -27,9 +27,6 @@ SESSION_COOKIE_SECURE = True
 ########## HOST CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['arey.dev']
-
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-x-forwarded-host
-USE_X_FORWARDED_HOST = True
 ########## END HOST CONFIGURATION
 
 
