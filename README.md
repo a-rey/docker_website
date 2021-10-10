@@ -5,7 +5,6 @@ A dockerized django server that I use in personal projects as a backend.
 ## TODO:
 
 - Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
-- Document how to manage letsencrypt certs
 
 ## Architecture Notes:
 
@@ -263,12 +262,13 @@ _NOTE:_ diagram made with https://draw.io
   - https://linuxincluded.com/dynamic-dns-with-google-domains/
   - https://ttlequals0.com/2015/03/24/google-domains-dynamic-dns-on-pfsense/
   
-- Nginx TLS resources:
+- Nginx TLS configuration/security resources:
 
   - https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
   - https://wiki.mozilla.org/Security/Server_Side_TLS
   - https://github.com/trimstray/nginx-admins-handbook/blob/master/doc/RULES.md
   - https://ssl-config.mozilla.org/
+  - **[TEST TLS]**: https://www.ssllabs.com/ssltest/analyze.html?d=arey.dev&hideResults=on
 
 ## Application Secrets:
 
