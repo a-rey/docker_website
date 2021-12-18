@@ -2,10 +2,6 @@
 
 A dockerized django server that I use in personal projects as a backend.
 
-## TODO:
-
-- Change host from Ubuntu 18.04 to [Ubuntu 20.04](https://releases.ubuntu.com/focal/) once it is more stable
-
 ## Architecture Notes:
 
 _NOTE:_ diagram made with https://draw.io
@@ -146,14 +142,14 @@ _NOTE:_ diagram made with https://draw.io
       ```
     
   - **PRODUCTION:** 
-    - **NOTE**: `app_whoami.json` must be generated _and_ packaged into the `django` container for this to work. If not, rebuild the `app_django` Docker image with a newly generated `app_whoami.json` fixture file _before_ continuing.
     - Connect to the DB:
 
       ```bash
-      sudo systemctl start web              # make sure django app is running
-      sudo docker exec -it django /bin/bash # get a bash shell in django container
-      cd /app                               # navigate to project directory
-      python manage.py dbshell              # start a DB SQL shell
+      sudo systemctl start web                                   # make sure django app is running
+      sudo docker cp app_whoami.json django:/tmp/app_whoami.json # copy fixtures into container
+      sudo docker exec -it django /bin/bash                      # get a bash shell in django container
+      cd /app                                                    # navigate to project directory
+      python manage.py dbshell                                   # start a DB SQL shell
       ```
       
     - _-- If Django DB schema has **not** changed --_ remove old table data:
@@ -177,9 +173,9 @@ _NOTE:_ diagram made with https://draw.io
     - Import the new fixtures:
 
       ```bash
-      python manage.py migrate                  # re-create any broken tables
-      python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
-      exit                                      # exit container shell
+      python manage.py migrate                       # re-create any broken tables
+      python manage.py loaddata /tmp/app_whoami.json # load JSON fixture (takes a while)
+      exit                                           # exit container shell
       ```
 
 ## Production Notes:
@@ -187,12 +183,21 @@ _NOTE:_ diagram made with https://draw.io
 - Build application images:
 
   ```bash
+  # !!! snapshot current SQL db:
+  source secrets/postgres.env && \
+    sudo docker-compose -f docker/docker-compose.yml exec postgres pg_dumpall -U $POSTGRES_USER > dump.sql
   sudo systemctl stop web                                                  # stop apps
   sudo docker rmi $(sudo docker images -aq)                                # remove apps
   sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild nginx
   sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild redis
   sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild django
   sudo docker build --tag app_postgres -f docker/app_postgres.Dockerfile . # rebuild db
+  # !!! restore SQL db snapshot:
+  sudo docker volume rm docker_postgres_data                               # remove old db
+  sudo systemctl start web                                                 # start apps
+  sudo docker cp dump.sql postgres:/tmp/dump.sql                           # copy snapshot into container
+  source secrets/postgres.env && \
+    sudo docker-compose -f docker/docker-compose.yml exec -T postgres psql -U $POSTGRES_USER -d $POSTGRES_DB < /tmp/dump.sql
   ```
   
 - Install docker-compose `web` service:
