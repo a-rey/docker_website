@@ -17,7 +17,7 @@ RUN \
     && apt-get install -y --no-install-recommends\
           curl \
           certbot \
-          python-certbot-nginx \
+          python3-certbot-nginx \
     # make expected static file volume mounts and nginx files
     && mkdir -p /__certbot \
     && mkdir -p /__staticfiles \
