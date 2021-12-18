@@ -197,7 +197,7 @@ _NOTE:_ diagram made with https://draw.io
   sudo systemctl start web                                                 # start apps
   sudo docker cp dump.sql postgres:/tmp/dump.sql                           # copy snapshot into container
   source secrets/postgres.env && \
-    sudo docker-compose -f docker/docker-compose.yml exec -T postgres psql -U $POSTGRES_USER -d $POSTGRES_DB < /tmp/dump.sql
+    sudo docker-compose -f docker/docker-compose.yml exec -T postgres psql -U $POSTGRES_USER -d $POSTGRES_DB < dump.sql
   ```
   
 - Install docker-compose `web` service:
