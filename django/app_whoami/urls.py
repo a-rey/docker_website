@@ -1,8 +1,8 @@
-import django.conf.urls
+import django.urls
 
 import app_whoami.views
 
 
 urlpatterns = [
-  django.conf.urls.url(r'^$', app_whoami.views.main, name='main'),
+  django.urls.re_path(r'^$', app_whoami.views.main, name='main'),
 ]

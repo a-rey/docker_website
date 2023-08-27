@@ -18,6 +18,7 @@ class CityBlock(django.db.models.Model):
     ('ip_start', 16777472)
     ('ip_end', 16777727)
   """
+  id = django.db.models.AutoField(primary_key=True)
   ipv4 = django.db.models.BooleanField(default=True)
   ip_start = django.db.models.DecimalField(max_digits=MAX_IP_DIGITS, decimal_places=0)
   ip_end = django.db.models.DecimalField(max_digits=MAX_IP_DIGITS, decimal_places=0)
@@ -39,6 +40,7 @@ class CityLocation(django.db.models.Model):
     ('country_name', 'Rwanda')
     ('city_name', '')
   """
+  id = django.db.models.AutoField(primary_key=True)
   geoname_id = django.db.models.IntegerField()
   continent_name = django.db.models.CharField(max_length=MAX_STR_LEN)
   country_name = django.db.models.CharField(max_length=MAX_STR_LEN)
@@ -57,6 +59,7 @@ class AsnBlock(django.db.models.Model):
     ('ip_start', 16777472)
     ('ip_end', 16777727)
   """
+  id = django.db.models.AutoField(primary_key=True)
   ipv4 = django.db.models.BooleanField(default=True)
   ip_start = django.db.models.DecimalField(max_digits=MAX_IP_DIGITS, decimal_places=0)
   ip_end = django.db.models.DecimalField(max_digits=MAX_IP_DIGITS, decimal_places=0)

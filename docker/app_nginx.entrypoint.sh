@@ -15,7 +15,7 @@ events {
 http {
   server {
     listen      0.0.0.0:8080;
-    server_name arey.dev;
+    server_name ${CERT_DOMAIN};
     location /.well-known/acme-challenge/ {
       root /__certbot/;
     }
@@ -28,14 +28,14 @@ EOL
   echo "[nginx][app-entrypoint.sh] running temporary nginx server to pass ACME validation ..."
   nginx -c /tmp/temp.conf
   echo "[nginx][app-entrypoint.sh] !!! requesting **new** TLS certificates for ${CERT_DOMAIN} ..."
-  certbot certonly --webroot \
-    ${CERT_CREATE_FLAGS} \
+  certbot certonly \
+    --webroot \
     --non-interactive \
     --webroot-path /__certbot \
     --email ${CERT_EMAIL} \
     --rsa-key-size ${CERT_RSA_KEY_SIZE} \
     --agree-tos \
-    --force-renewal \
+    --no-eff-email \
     -d ${CERT_DOMAIN}
   # wait until temporary nginx master process exits
   nginx -c /tmp/temp.conf -s quit
@@ -51,13 +51,11 @@ do
   sleep ${CERT_RENEW_DELAY}
   wait $!
   echo "[nginx][app-entrypoint.sh] !!! renewing ${CERT_DOMAIN} ..."
-  certbot renew \
-    ${CERT_RENEW_FLAGS} \
-    --non-interactive \
-    --cert-name ${CERT_DOMAIN}
+  certbot renew --cert-name ${CERT_DOMAIN}
   echo "[nginx][app-entrypoint.sh] reloading nginx configuration ..."
   nginx -s reload
 done &
 
 echo "[nginx][app-entrypoint.sh] starting nginx server ..."
 nginx
+

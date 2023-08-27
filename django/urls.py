@@ -1,11 +1,11 @@
-import django.conf.urls
+import django.urls
 import django.contrib.admin
 
 
 urlpatterns = [
-  django.conf.urls.url(r'^', django.conf.urls.include(('app_website.urls', 'app_website'))),
-  django.conf.urls.url(r'^whoami/', django.conf.urls.include(('app_whoami.urls', 'app_whoami'))),
-  django.conf.urls.url(r'^backdoor/', django.contrib.admin.site.urls),
+  django.urls.re_path(r'^', django.urls.include(('app_website.urls', 'app_website'))),
+  django.urls.re_path(r'^whoami/', django.urls.include(('app_whoami.urls', 'app_whoami'))),
+  django.urls.re_path(r'^backdoor/', django.contrib.admin.site.urls),
 ]
 
 # HTTP errors are handled by app_website

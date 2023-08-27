@@ -1,5 +1,5 @@
 # https://pythonspeed.com/articles/base-image-python-docker-images/
-FROM python:3.7-slim-buster
+FROM python:3.11-slim
 
 # https://docs.python.org/3/using/cmdline.html#cmdoption-u
 ENV PYTHONUNBUFFERED 1
@@ -25,13 +25,13 @@ RUN \
           build-essential \
           postgresql-client \
     # install application Python dependencies
-    && python3.7 -m pip install --upgrade pip \
-    && python3.7 -m pip install --no-cache-dir pipenv \
+    && python3 -m pip install --upgrade pip \
+    && python3 -m pip install --no-cache-dir pipenv \
     && cd /app \
-    && pipenv lock -r > requirements.txt \
+    && pipenv lock --verbose \
+    && pipenv install --system --deploy --verbose \
     && pipenv --rm --clear \
-    && python3.7 -m pip uninstall -y pipenv \
-    && python3.7 -m pip install --no-cache-dir -r requirements.txt \
+    && python3 -m pip uninstall -y pipenv \
     # make entry executable
     && chmod +x /app-entrypoint.sh \
     # create image user and chown files

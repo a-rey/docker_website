@@ -17,7 +17,7 @@ ROOT_URLCONF = 'urls'
 
 ########## WSGI CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
-WSGI_APPLICATION = 'wsgi.app'
+WSGI_APPLICATION = 'wsgi.application'
 ########## END WSGI CONFIGURATION
 
 

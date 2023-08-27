@@ -13,7 +13,7 @@ function Help() {
     kern.write(kern.sanitize('               |  | |  | |  \\ |__| | \\|  |  \\ |___   |   |___ ___] '), ['color_lime']).flush();
     kern.flush();
     kern.write('I am a ').write('computer engineer', ['color_orange']).write(' interested in:').flush();
-    kern.write(' ~ ').write('Information Security', ['color_violet']).flush();
+    kern.write(' ~ ').write('Vulnerability Research', ['color_violet']).flush();
     kern.write(' ~ ').write('Reverse Engineering', ['color_violet']).flush();
     kern.write(' ~ ').write('Embedded Systems Development', ['color_violet']).flush();
     kern.flush();

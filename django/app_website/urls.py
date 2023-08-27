@@ -1,7 +1,7 @@
-import django.conf.urls
+import django.urls
 
 import app_website.views
 
 urlpatterns = [
-  django.conf.urls.url(r'^$', app_website.views.main, name='main'),
+  django.urls.re_path(r'^$', app_website.views.main, name='main'),
 ]

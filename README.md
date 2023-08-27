@@ -187,7 +187,7 @@ _NOTE:_ diagram made with https://draw.io
   source secrets/postgres.env && \
     sudo docker-compose -f docker/docker-compose.yml exec postgres pg_dumpall -U $POSTGRES_USER > dump.sql
   sudo systemctl stop web                                                  # stop apps
-  sudo docker rmi $(sudo docker images -aq)                                # remove apps
+  sudo docker rmi --force $(sudo docker images -aq)                        # remove apps
   sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild nginx
   sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild redis
   sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild django
@@ -198,6 +198,9 @@ _NOTE:_ diagram made with https://draw.io
   sudo docker cp dump.sql postgres:/tmp/dump.sql                           # copy snapshot into container
   source secrets/postgres.env && \
     sudo docker-compose -f docker/docker-compose.yml exec -T postgres psql -U $POSTGRES_USER -d $POSTGRES_DB < dump.sql
+  # remove DB backup
+  rm dump.sql
+  sudo systemctl restart web 
   ```
   
 - Install docker-compose `web` service:

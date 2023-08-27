@@ -14,10 +14,7 @@ RUN \
     # update system packages
        apt-get update \
     # install certbot (https://certbot.eff.org/lets-encrypt/debianbuster-nginx)
-    && apt-get install -y --no-install-recommends\
-          curl \
-          certbot \
-          python3-certbot-nginx \
+    && apt-get install -y --no-install-recommends curl certbot python3-certbot-nginx \
     # make expected static file volume mounts and nginx files
     && mkdir -p /__certbot \
     && mkdir -p /__staticfiles \
@@ -41,8 +38,7 @@ RUN \
     && chown -R ${USER_GID}:${USER_GID} /var/log/letsencrypt \
     && chown -R ${USER_GID}:${USER_GID} /etc/letsencrypt \
     # layer cleanup
-    && apt-get purge -y --auto-remove \
-          curl \
+    && apt-get purge -y --auto-remove curl \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf \

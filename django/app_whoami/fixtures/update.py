@@ -119,8 +119,8 @@ if __name__ == '__main__':
           blk[i].pop('registered_country_geoname_id', None)
           blk[i].pop('represented_country_geoname_id', None)
           blk[i]['geoname_id'] = int(blk[i]['geoname_id'])
-          blk[i]['latitude'] = float(blk[i]['latitude'])
-          blk[i]['longitude'] = float(blk[i]['longitude'])
+          blk[i]['latitude'] = float(blk[i]['latitude']) if blk[i]['latitude'] else 0.0
+          blk[i]['longitude'] = float(blk[i]['longitude']) if blk[i]['longitude'] else 0.0
           out.append({
             'model': CITY_BLOCK_MODEL,
             'pk': i,
