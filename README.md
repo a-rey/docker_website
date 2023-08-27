@@ -20,69 +20,63 @@ _NOTE:_ diagram made with https://draw.io
 - [Redis](https://redis.io/)
   - PostgreSQL request caching through Django for UNIX
 
-## Design Decision Notes:
+## Design Notes:
 
-- Django application _caches_ the entire session context in Redis instead of using PostgreSQL for write-though persistent sessions. Session context cache misses are currently only applicable for the Django admin application, and therefore unlikely. To enable persistent sessions, uncomment `'django.contrib.sessions'` in `INSTALLED_APPS` for `django/settings/common.py` and change `SESSION_ENGINE` to `django.contrib.sessions.backends.cached_db`. 
-  - See: https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions
+- Django application _caches_ the entire session context in Redis instead of using PostgreSQL for write-though persistent sessions. Session context cache misses are currently only applicable for the Django admin application, and therefore unlikely. To enable persistent sessions, uncomment `'django.contrib.sessions'` in `INSTALLED_APPS` for `django/settings/common.py` and change `SESSION_ENGINE` to `django.contrib.sessions.backends.cached_db` (https://docs.djangoproject.com/en/dev/topics/http/sessions/#configuring-sessions)
+
 - Docker production design splits the internal Docker network into a fontend (Nginx) and backend (PostgreSQL & Redis) with the Django container serving as the link between the two for better Docker container isolation.
-- Redis is configured to _not_ perform database snapshotting since a cache miss will not cause any current Django application logic issues:
-  - See: https://redis.io/topics/persistence
-- All _sensitive_ production configuration files are stored in a directory called `secrets` which is not tracked by Git. 
-  - See: `Application Secrets` README section below for more information
+
+- Redis is configured to _not_ perform database snapshotting since a cache miss will not cause any current Django application logic issues (https://redis.io/topics/persistence)
+
+- All _sensitive_ production configuration files are stored in a directory called `secrets` which is not tracked by Git. See: `Application Secrets` README section below for more information.
+
 - All production Docker containers are running as non-`root` users. Only the Nginx and Django containers must share the same user/group ID in order to share a Docker volume containing Django's static files to be served by Nginx.
 
 ## Host Setup Notes:
 
-- [Ubuntu 18.04 LTS amd64 ISO download](https://ubuntu.com/download/server/thank-you?version=18.04.4&architecture=amd64)
+- [Ubuntu amd64 ISO download](https://releases.ubuntu.com/22.04.3/ubuntu-22.04.3-live-server-amd64.iso)
 - [Docker CE Install](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 - [Docker Compose Install](https://docs.docker.com/compose/install/)
-- Install Python3.7 and [pipenv](https://pipenv.pypa.io/en/latest/):
 
-  ```bash
-  sudo apt-get update
-  sudo apt-get upgrade
-  sudo apt-get install -y python3.7 python3-pip
-  python3.7 -m pip install --user pipenv
-  echo 'export PATH="${HOME}/.local/bin:$PATH"' >> ~/.bashrc
-  source ~/.bashrc
-  ```
-- Install Django application dependencies:
-
-  ```bash
-  sudo apt-get install -y \
-    libpq-dev \
-    python3.7-dev \
-    build-essential \
-    python3-setuptools # psycopg2 (Python postgresql) dependencies 
-  cd django
-  pipenv install --dev
-  ```
-- Remove Ubuntu snapd:
-
-  ```bash
-  sudo apt autoremove --purge snapd gnome-software-plugin-snap
-  sudo rm -rf /var/cache/snapd/
-  rm -fr ~/snap
-  ```
-
-## Django Application Development Notes:
-
-  ```bash
-  export DJANGO_SETTINGS_MODULE=settings.development # set django settings module
-  cd django                                          # enter project directory
-  pipenv shell                                       # start virtualenv shell
-  rm -rf __dev-*                                     # remove old dev files
-  python manage.py collectstatic --no-input          # recollect static files 
-  python manage.py migrate                           # setup database schema
-  python manage.py runserver 0.0.0.0:8000            # spin up django app
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # MISC development commands
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  python manage.py createsuperuser          # add test admin user to database
-  python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
-  python manage.py flush                    # drop all data in each DB table
-  exit                                      # exit virtual environment
-  ```
+```bash
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# host setup
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install -y python3 python3-pip
+python3 -m pip install --user pipenv
+echo 'export PATH="${HOME}/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+# remove snapd
+sudo apt autoremove --purge snapd gnome-software-plugin-snap
+sudo rm -rf /var/cache/snapd/
+sudo systemctl daemon-reload
+rm -rf ~/snap
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# development environment setup
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sudo apt-get install -y \
+  libpq-dev \
+  python3-dev \
+  build-essential \
+  python3-setuptools # psycopg2 (Python postgresql) dependencies 
+cd django
+pipenv install --dev
+pipenv shell                                       # start virtualenv shell
+export DJANGO_SETTINGS_MODULE=settings.development # set django settings module
+rm -rf __dev-*                                     # remove old dev files
+python manage.py collectstatic --no-input          # recollect static files 
+python manage.py migrate                           # setup database schema
+python manage.py runserver 0.0.0.0:8000            # spin up django app
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# MISC development commands
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+python manage.py createsuperuser          # add test admin user to database
+python manage.py loaddata app_whoami.json # load JSON fixture (takes a while)
+python manage.py flush                    # drop all data in each DB table
+exit                                      # exit virtual environment
+```
 
 ## MaxMind GeoIP Database Management Notes:
 
@@ -187,7 +181,7 @@ _NOTE:_ diagram made with https://draw.io
   source secrets/postgres.env && \
     sudo docker-compose -f docker/docker-compose.yml exec postgres pg_dumpall -U $POSTGRES_USER > dump.sql
   sudo systemctl stop web                                                  # stop apps
-  sudo docker rmi --force $(sudo docker images -aq)                        # remove apps
+  sudo docker rmi $(sudo docker images -aq)                                # remove apps
   sudo docker build --tag app_nginx -f docker/app_nginx.Dockerfile .       # rebuild nginx
   sudo docker build --tag app_redis -f docker/app_redis.Dockerfile .       # rebuild redis
   sudo docker build --tag app_django -f docker/app_django.Dockerfile .     # rebuild django
@@ -198,9 +192,6 @@ _NOTE:_ diagram made with https://draw.io
   sudo docker cp dump.sql postgres:/tmp/dump.sql                           # copy snapshot into container
   source secrets/postgres.env && \
     sudo docker-compose -f docker/docker-compose.yml exec -T postgres psql -U $POSTGRES_USER -d $POSTGRES_DB < dump.sql
-  # remove DB backup
-  rm dump.sql
-  sudo systemctl restart web 
   ```
   
 - Install docker-compose `web` service:
@@ -262,7 +253,7 @@ _NOTE:_ diagram made with https://draw.io
   # spawn a bash shell in a running container
   sudo docker exec -it <container_name> /bin/bash
   # create a standalone container from image with bash as entrypoint
-  sudo docker run -it --entrypoint /bin/bash <image_name> -s
+  sudo docker run -p 80:8080 -p 443:4443 --env-file secrets/nginx.env -it --entrypoint /bin/bash <image_name> -s
   ```
 
 - Google Domains with Dynamic DNS in pfsense:
@@ -271,7 +262,6 @@ _NOTE:_ diagram made with https://draw.io
   - https://ttlequals0.com/2015/03/24/google-domains-dynamic-dns-on-pfsense/
   
 - Nginx TLS configuration/security resources:
-
   - https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
   - https://wiki.mozilla.org/Security/Server_Side_TLS
   - https://github.com/trimstray/nginx-admins-handbook/blob/master/doc/RULES.md
@@ -328,4 +318,3 @@ _NOTE:_ diagram made with https://draw.io
 - [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
 - [Docker Compose Reference](https://docs.docker.com/compose/compose-file/)
 - [LetsEncrypt `certbot` Documentation](https://certbot.eff.org/docs/index.html)
-
