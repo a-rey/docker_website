@@ -6,7 +6,7 @@ A dockerized django server that I use in personal projects as a backend.
 
 _NOTE:_ diagram made with https://draw.io
 
-![Architecture](./docs/architecture.png)
+![Architecture](./docs/architecture.v2.png)
 
 - [Nginx](https://www.nginx.com/):
   - Acts as a fast and lightweight [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy)
